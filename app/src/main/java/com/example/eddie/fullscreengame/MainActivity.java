@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    private Button invisibleButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +19,8 @@ public class MainActivity extends AppCompatActivity {
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
 
         Gameboard spelbrade = (Gameboard)findViewById(R.id.Gameboard);
-        spelbrade.setLayoutParams(new ViewGroup.LayoutParams(size, size));
+        spelbrade.getLayoutParams().height = size;
+        spelbrade.getLayoutParams().width = size;
         spelbrade.invalidate();
     }
 
