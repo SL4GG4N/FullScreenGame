@@ -11,22 +11,4 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.eddie.fullscreengame.MainActivity">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ninemenboard"
-        android:id="@+id/imageView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/testInvisibleButton"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:alpha="0"/>
 </RelativeLayout>
