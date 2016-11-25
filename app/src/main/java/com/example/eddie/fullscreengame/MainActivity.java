@@ -13,11 +13,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Gameboard spelbrade = (Gameboard)findViewById(R.id.Gameboard);
 
-        //knappen är osynlig pga. i viewXML:en är alpha = 0
-        invisibleButton = (Button) findViewById(R.id.testInvisibleButton);
-        invisibleButton.setVisibility(View.VISIBLE);
-        invisibleButton.setOnClickListener(new SayHelloListener());
+        toast(""+spelbrade.getMeasuredHeight());
+        toast(""+spelbrade.getMeasuredWidth());
+    }
+
+    private void toast(String text) {
+        Toast toast = Toast.makeText(this,text,Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     private class SayHelloListener implements View.OnClickListener{

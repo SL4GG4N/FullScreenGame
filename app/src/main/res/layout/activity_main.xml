@@ -11,4 +11,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.eddie.fullscreengame.MainActivity">
 
+    <view class="com.example.eddie.fullscreengame.Gameboard"
+        android:id="@+id/Gameboard"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true" />
 </RelativeLayout>
