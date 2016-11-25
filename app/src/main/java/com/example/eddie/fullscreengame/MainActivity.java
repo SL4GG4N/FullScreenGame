@@ -19,11 +19,11 @@ public class MainActivity extends AppCompatActivity {
         int height = displaymetrics.heightPixels;
         int width = displaymetrics.widthPixels;
 
-
         Gameboard spelbrade = (Gameboard)findViewById(R.id.Gameboard);
+        spelbrade.invalidate();
 
-        toastText("" + height);
-        toastText("" + width);
+        toastText(""+height);
+        toastText(""+width);
     }
 
     private class SayHelloListener implements View.OnClickListener{

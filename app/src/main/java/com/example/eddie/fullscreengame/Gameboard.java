@@ -13,6 +13,10 @@ public class Gameboard extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        System.out.println("View says: X="+getX());
+        System.out.println("View says: Y="+getY());
+        System.out.println("View says: X="+getHeight());
+        System.out.println("View says: Y="+getWidth());
         super.onDraw(canvas);
     }
 
