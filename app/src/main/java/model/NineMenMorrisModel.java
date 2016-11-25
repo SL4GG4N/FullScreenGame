@@ -4,7 +4,15 @@ package model;
  * Created by simonlundstrom on 25/11/16.
  */
 public class NineMenMorrisModel {
-    public Point[] points;
+    private Point[] points;
+
+    public Point getPoint(int i) {
+        return points[i];
+    }
+
+    public Point[] getPoints() {
+        return points;
+    }
 
     public NineMenMorrisModel() {
         points = new Point[24];

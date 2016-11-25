@@ -6,6 +6,7 @@ package model;
 
 public class Point{
     int x,y;
+    Status status;
 
     public int getX() {
         return x;
@@ -18,5 +19,9 @@ public class Point{
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
+        this.status=Status.EMPTY;
+    }
+    public enum Status{
+        EMPTY,WHITE,BLACK;
     }
 }

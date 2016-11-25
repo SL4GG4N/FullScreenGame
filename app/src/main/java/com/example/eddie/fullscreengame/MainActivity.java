@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View view, MotionEvent me) {
             if (me.getAction()==MotionEvent.ACTION_DOWN) {
                 System.out.println((int)me.getX()+";"+(int)me.getY());
-                spelbrade.handleClick((int)me.getX(),me.getY());
+                spelbrade.handleClick((int)me.getX(),(int)me.getY());
             }
             return true;
         }
