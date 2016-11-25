@@ -3,6 +3,7 @@ package com.example.eddie.fullscreengame;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,6 +23,17 @@ public class MainActivity extends AppCompatActivity {
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
         spelbrade.invalidate();
+        spelbrade.setOnTouchListener(new GameboardTouchListener());
+    }
+
+    private class GameboardTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View view, MotionEvent me) {
+            if (me.getAction()==MotionEvent.ACTION_DOWN) {
+                System.out.println(me.getX()+"("+me.getRawX()+");"+me.getY()+"("+me.getRawY()+")");
+            }
+            return true;
+        }
     }
 
     private void toastText(String text) {
