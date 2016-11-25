@@ -13,6 +13,8 @@ import android.view.View;
 
 public class Gameboard extends View {
 
+    Point[] points;
+
     @Override
     protected void onDraw(Canvas canvas) {
         Paint p = new Paint();
@@ -25,11 +27,6 @@ public class Gameboard extends View {
     private void nineMenMorrisBoard(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
-        canvas.drawRect(absPos(0.1),absPos(0.1),absPos(0.8),absPos(0.9),paint);
-    }
-
-    private int absPos(double relPos) {
-        return (int)(relPos*getWidth());
     }
 
     public Gameboard(Context context, AttributeSet attrs) {
@@ -42,5 +39,9 @@ public class Gameboard extends View {
 
     public Gameboard(Context context) {
         super(context);
+    }
+
+    private class Point {
+        int x,y;
     }
 }

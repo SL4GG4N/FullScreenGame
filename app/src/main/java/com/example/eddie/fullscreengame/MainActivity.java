@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
 
         Gameboard spelbrade = (Gameboard)findViewById(R.id.Gameboard);
-        spelbrade.setLayoutParams(new ViewGroup.LayoutParams(size, size));
         spelbrade.invalidate();
     }
 
