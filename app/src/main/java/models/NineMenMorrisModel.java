@@ -1,4 +1,4 @@
-package model;
+package models;
 
 /**
  * Created by simonlundstrom on 25/11/16.
@@ -12,6 +12,13 @@ public class NineMenMorrisModel {
 
     public Point[] getPoints() {
         return points;
+    }
+
+    public int indexOf(Point p) {
+        for (int i=0; i<points.length; i++)
+            if (points[i]==p)
+                return i;
+        return -1;
     }
 
     public NineMenMorrisModel() {

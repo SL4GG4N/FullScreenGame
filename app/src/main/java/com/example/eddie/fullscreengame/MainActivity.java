@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import controllers.GameController;
+
 public class MainActivity extends AppCompatActivity {
-    Gameboard spelbrade;
+
+    public static Gameboard spelbrade;
+    public static TextView infoPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,14 +29,15 @@ public class MainActivity extends AppCompatActivity {
         spelbrade.getLayoutParams().width = size;
         spelbrade.invalidate();
         spelbrade.setOnTouchListener(new GameboardTouchListener());
+        infoPanel = (TextView)findViewById(R.id.textView);
+        infoPanel.setText("Här ska det stå nåt");
     }
 
     private class GameboardTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent me) {
             if (me.getAction()==MotionEvent.ACTION_DOWN) {
-                System.out.println((int)me.getX()+";"+(int)me.getY());
-                spelbrade.handleClick((int)me.getX(),(int)me.getY());
+                toastText("Du träffade "+spelbrade.validateClick((int)me.getX(),(int)me.getY()));
             }
             return true;
         }

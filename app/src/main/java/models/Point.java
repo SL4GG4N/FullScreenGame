@@ -1,12 +1,12 @@
-package model;
+package models;
 
 /**
  * Created by simonlundstrom on 25/11/16.
  */
 
 public class Point{
-    int x,y;
-    Status status;
+    private int x,y;
+    public Status status;
 
     public int getX() {
         return x;
@@ -21,6 +21,15 @@ public class Point{
         this.y = y;
         this.status=Status.EMPTY;
     }
+
+    public float distanceTo(int x, int y) {
+        return (float)Math.sqrt(Math.pow(this.x-x,2)+Math.pow(this.y-y,2));
+    }
+
+    public String toString() {
+        return "("+x+";"+y+")";
+    }
+
     public enum Status{
         EMPTY,WHITE,BLACK;
     }

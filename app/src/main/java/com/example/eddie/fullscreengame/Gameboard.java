@@ -7,8 +7,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
-import model.NineMenMorrisModel;
-import model.Point;
+import models.NineMenMorrisModel;
+import models.Point;
 
 /**
  * Created by simonlundstrom on 25/11/16.
@@ -16,6 +16,12 @@ import model.Point;
 
 public class Gameboard extends View {
     private static NineMenMorrisModel model;
+    // OBS! F|ljande siffror {r i enheten "tusendelar av sk}rmbredden"!
+    // De ska ALLTID multipliceras med Math.min(getHeight(),getWidth())
+    // och sen divideras med 1000. Gl|m inte!
+    private static final int POINT_POSITION_TO_PIXEL = 125;
+    private static final int CIRCLE_RADIUS = 20;
+    private static final int CLICK_RADIUS= 60;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -53,14 +59,14 @@ public class Gameboard extends View {
                             abspos(model.getPoint(j+2).getY()),
                             paint);
         }
-        float radius = Math.min(getWidth(), getHeight()) * 0.02f;
+        float radius = Math.min(getWidth(), getHeight()) * CIRCLE_RADIUS / 1000;
         for (Point p : model.getPoints()) {
             canvas.drawCircle(abspos(p.getX()), abspos(p.getY()), radius, paint);
         }
     }
 
     private int abspos(int relpos) {
-        return Math.min(getWidth(), getHeight()) * relpos * 125 / 1000;
+        return Math.min(getWidth(), getHeight()) * relpos * POINT_POSITION_TO_PIXEL / 1000;
     }
 
     public Gameboard(Context context, AttributeSet attrs) {
@@ -78,7 +84,15 @@ public class Gameboard extends View {
         model = new NineMenMorrisModel();
     }
 
-    public void handleClick(int x, float y) {
-
+    public int validateClick(int x, int y) {
+        Point finger = new Point (x,y);
+        System.out.println("Finger: "+finger);
+        int CLICKRADIE = Math.min(getWidth(),getHeight())*CLICK_RADIUS/1000;
+        for (Point p : model.getPoints()) {
+            if (finger.distanceTo(abspos(p.getX()),abspos(p.getY())) < CLICKRADIE) {
+                return model.indexOf(p);
+            }
+        }
+        return -1;
     }
 }
