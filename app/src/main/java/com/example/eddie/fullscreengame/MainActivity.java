@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -16,21 +17,11 @@ public class MainActivity extends AppCompatActivity {
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int height = displaymetrics.heightPixels;
-        int width = displaymetrics.widthPixels;
+        int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
 
         Gameboard spelbrade = (Gameboard)findViewById(R.id.Gameboard);
+        spelbrade.setLayoutParams(new ViewGroup.LayoutParams(size, size));
         spelbrade.invalidate();
-
-        toastText(""+height);
-        toastText(""+width);
-    }
-
-    private class SayHelloListener implements View.OnClickListener{
-        @Override
-        public void onClick(View view) {
-            toastText("HELLOOOO");
-        }
     }
 
     private void toastText(String text) {
