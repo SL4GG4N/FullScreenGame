@@ -7,88 +7,79 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import model.NineMenMorrisModel;
+import model.Point;
+
 /**
  * Created by simonlundstrom on 25/11/16.
  */
 
 public class Gameboard extends View {
+    private static NineMenMorrisModel model;
 
     @Override
     protected void onDraw(Canvas canvas) {
         Paint p = new Paint();
         p.setColor(Color.GREEN);
         canvas.drawPaint(p);
-        nineMenMorrisBoard(canvas);
+        drawNineMenMorrisBoard(canvas);
         super.onDraw(canvas);
     }
 
-    private void nineMenMorrisBoard(Canvas canvas) {
+    private void drawNineMenMorrisBoard(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(4);
-        // TODO: 25/11/16 Automatisera 
-        drawLine(canvas,1,1,7,1,paint);
-        drawLine(canvas,7,1,7,7,paint);
-        drawLine(canvas,1,1,1,7,paint);
-        drawLine(canvas,1,7,7,7,paint);
-        drawLine(canvas,2,2,6,2,paint);
-        drawLine(canvas,2,6,6,6,paint);
-        drawLine(canvas,2,2,2,6,paint);
-        drawLine(canvas,6,2,6,6,paint);
-        drawLine(canvas,3,3,5,3,paint);
-        drawLine(canvas,5,3,5,5,paint);
-        drawLine(canvas,3,3,3,5,paint);
-        drawLine(canvas,3,5,5,5,paint);
-        drawLine(canvas,4,1,4,3,paint);
-        drawLine(canvas,4,7,4,5,paint);
-        drawLine(canvas,1,4,3,4,paint);
-        drawLine(canvas,5,4,7,4,paint);
-        float radius = Math.min(getWidth(),getHeight())*0.02f;
-        drawCircle(canvas,1,1,radius,paint);
-        drawCircle(canvas,4,1,radius,paint);
-        drawCircle(canvas,7,1,radius,paint);
-        drawCircle(canvas,2,2,radius,paint);
-        drawCircle(canvas,4,2,radius,paint);
-        drawCircle(canvas,6,2,radius,paint);
-        drawCircle(canvas,3,3,radius,paint);
-        drawCircle(canvas,4,3,radius,paint);
-        drawCircle(canvas,5,3,radius,paint);
-        drawCircle(canvas,1,4,radius,paint);
-        drawCircle(canvas,2,4,radius,paint);
-        drawCircle(canvas,3,4,radius,paint);
-        drawCircle(canvas,5,4,radius,paint);
-        drawCircle(canvas,6,4,radius,paint);
-        drawCircle(canvas,7,4,radius,paint);
-        drawCircle(canvas,3,5,radius,paint);
-        drawCircle(canvas,4,5,radius,paint);
-        drawCircle(canvas,5,5,radius,paint);
-        drawCircle(canvas,2,6,radius,paint);
-        drawCircle(canvas,4,6,radius,paint);
-        drawCircle(canvas,6,6,radius,paint);
-        drawCircle(canvas,1,7,radius,paint);
-        drawCircle(canvas,4,7,radius,paint);
-        drawCircle(canvas,7,7,radius,paint);
+        for (int j = 0; j < 3; j++) {
+            for (int i=0; i<24; i+=6) {
+                canvas.drawLine(abspos(model.points[i+j].getX()),
+                                abspos(model.points[i+j].getY()),
+                                abspos(model.points[(i+j+6)%24].getX()),
+                                abspos(model.points[(i+j+6)%24].getY()),
+                                paint);
+            }
+        }
+        for (int j=3; j<24; j+=6) {
+            canvas.drawLine(abspos(model.points[j].getX()),
+                            abspos(model.points[j].getY()),
+                            abspos(model.points[j+2].getX()),
+                            abspos(model.points[j+2].getY()),
+                            paint);
+        }
+        float radius = Math.min(getWidth(), getHeight()) * 0.02f;
+        for (Point p : model.points) {
+            canvas.drawCircle(abspos(p.getX()), abspos(p.getY()), radius, paint);
+        }
     }
 
     private void drawLine(Canvas c, int fromX, int fromY, int toX, int toY, Paint p) {
-        c.drawLine(abspos(fromX),abspos(fromY),abspos(toX),abspos(toY),p);
+        c.drawLine(abspos(fromX), abspos(fromY), abspos(toX), abspos(toY), p);
     }
+
     private void drawCircle(Canvas c, int x, int y, float rad, Paint p) {
-        c.drawCircle(abspos(x),abspos(y),rad, p);
+        c.drawCircle(abspos(x), abspos(y), rad, p);
     }
+
     private int abspos(int relpos) {
-        return Math.min(getWidth(),getHeight())*relpos*125/1000;
+        return Math.min(getWidth(), getHeight()) * relpos * 125 / 1000;
     }
 
     public Gameboard(Context context, AttributeSet attrs) {
         super(context, attrs);
+        model = new NineMenMorrisModel();
     }
 
     public Gameboard(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        model = new NineMenMorrisModel();
     }
 
     public Gameboard(Context context) {
         super(context);
+        model = new NineMenMorrisModel();
+    }
+
+    public void handleClick(int x, float y) {
+
     }
 }

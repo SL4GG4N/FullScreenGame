@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+    Gameboard spelbrade;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
 
-        Gameboard spelbrade = (Gameboard)findViewById(R.id.Gameboard);
+        spelbrade = (Gameboard)findViewById(R.id.Gameboard);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
         spelbrade.invalidate();
@@ -30,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onTouch(View view, MotionEvent me) {
             if (me.getAction()==MotionEvent.ACTION_DOWN) {
-                System.out.println(me.getX()+"("+me.getRawX()+");"+me.getY()+"("+me.getRawY()+")");
+                System.out.println((int)me.getX()+";"+(int)me.getY());
+                spelbrade.handleClick((int)me.getX(),me.getY());
             }
             return true;
         }
