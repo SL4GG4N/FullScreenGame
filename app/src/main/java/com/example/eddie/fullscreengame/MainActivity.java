@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         Gameboard spelbrade = (Gameboard)findViewById(R.id.Gameboard);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
+        spelbrade.setY(100);
         spelbrade.invalidate();
     }
 
