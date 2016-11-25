@@ -2,6 +2,8 @@ package com.example.eddie.fullscreengame;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -13,11 +15,19 @@ public class Gameboard extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        System.out.println("View says: X="+getX());
-        System.out.println("View says: Y="+getY());
-        System.out.println("View says: X="+getHeight());
-        System.out.println("View says: Y="+getWidth());
+        Paint p = new Paint();
+        p.setColor(Color.GREEN);
+        canvas.drawPaint(p);
+        drawBoard(canvas);
         super.onDraw(canvas);
+    }
+
+    private void drawBoard(Canvas canvas) {
+
+    }
+
+    private int absPos(double relPos) {
+        return (int)(relPos*getWidth());
     }
 
     public Gameboard(Context context, AttributeSet attrs) {
