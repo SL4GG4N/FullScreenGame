@@ -18,12 +18,14 @@ public class Gameboard extends View {
         Paint p = new Paint();
         p.setColor(Color.GREEN);
         canvas.drawPaint(p);
-        drawBoard(canvas);
+        nineMenMorrisBoard(canvas);
         super.onDraw(canvas);
     }
 
-    private void drawBoard(Canvas canvas) {
-
+    private void nineMenMorrisBoard(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        canvas.drawRect(absPos(0.1),absPos(0.1),absPos(0.8),absPos(0.9),paint);
     }
 
     private int absPos(double relPos) {
