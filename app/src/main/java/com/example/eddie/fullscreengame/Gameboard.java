@@ -12,7 +12,6 @@ import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
 
 import models.NineMenMorrisModel;
-import models.Pawn;
 import models.Point;
 
 /**
