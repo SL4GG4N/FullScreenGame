@@ -1,19 +1,25 @@
 package com.example.eddie.fullscreengame;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import controllers.GameController;
+import models.Pawn;
 
 public class MainActivity extends AppCompatActivity {
 
     public static Gameboard spelbrade;
-    public static TextView infoPanel;
+    public TextView infoPanel;
+    public ImageView sidView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +37,25 @@ public class MainActivity extends AppCompatActivity {
         spelbrade.setOnTouchListener(new GameboardTouchListener());
         infoPanel = (TextView)findViewById(R.id.textView);
         infoPanel.setText("Här ska det stå nåt");
+//        sidlogo = new Pawn(getResources().getDrawable(R.drawable.sidlogga));
+        sidView = (ImageView)findViewById(R.id.imageView);
+        sidView.setX(100);
+        sidView.setY(100);
+        sidView.setMaxHeight(100);
+        sidView.setMaxWidth(100);
+        sidView.setAdjustViewBounds(true);
+
     }
 
     private class GameboardTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent me) {
             if (me.getAction()==MotionEvent.ACTION_DOWN) {
-                toastText("Du träffade "+spelbrade.validateClick((int)me.getX(),(int)me.getY()));
+                int p = spelbrade.validateClick(sidView, (int)me.getX(),(int)me.getY());
+                infoPanel.setText("Du träffade "+ p);
+                if (p>=0) {
+                    System.out.println("MainActivity såg en träff.");
+                }
             }
             return true;
         }

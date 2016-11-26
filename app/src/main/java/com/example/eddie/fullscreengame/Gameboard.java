@@ -1,13 +1,18 @@
 package com.example.eddie.fullscreengame;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.widget.ImageView;
 
 import models.NineMenMorrisModel;
+import models.Pawn;
 import models.Point;
 
 /**
@@ -16,19 +21,24 @@ import models.Point;
 
 public class Gameboard extends View {
     private static NineMenMorrisModel model;
+//    private static Pawn sidlogo;
+    private static Paint p = new Paint();
+    private ImageView sidlogo;
     // OBS! F|ljande siffror {r i enheten "tusendelar av sk}rmbredden"!
     // De ska ALLTID multipliceras med Math.min(getHeight(),getWidth())
     // och sen divideras med 1000. Gl|m inte!
     private static final int POINT_POSITION_TO_PIXEL = 125;
     private static final int CIRCLE_RADIUS = 20;
     private static final int CLICK_RADIUS= 60;
+    private static final int Y_OFFSET_FOR_IMAGEVIEW = 235;
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Paint p = new Paint();
+        System.out.println("Gameboard drawing!");
         p.setColor(Color.GRAY);
         canvas.drawPaint(p);
         drawNineMenMorrisBoard(canvas);
+//        sidlogo.draw(canvas);
         super.onDraw(canvas);
     }
 
@@ -71,28 +81,46 @@ public class Gameboard extends View {
 
     public Gameboard(Context context, AttributeSet attrs) {
         super(context, attrs);
-        model = new NineMenMorrisModel();
+        init();
     }
 
     public Gameboard(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        model = new NineMenMorrisModel();
+        init();
     }
 
     public Gameboard(Context context) {
         super(context);
-        model = new NineMenMorrisModel();
+        init();
     }
 
-    public int validateClick(int x, int y) {
+    private void init() {
+        model=new NineMenMorrisModel();
+        sidlogo = (ImageView)findViewById(R.id.imageView);
+        p = new Paint();
+    }
+
+    public int validateClick(ImageView obj, int x, int y) {
         Point finger = new Point (x,y);
         System.out.println("Finger: "+finger);
         int CLICKRADIE = Math.min(getWidth(),getHeight())*CLICK_RADIUS/1000;
         for (Point p : model.getPoints()) {
             if (finger.distanceTo(abspos(p.getX()),abspos(p.getY())) < CLICKRADIE) {
+                animateMovement(obj, abspos(p.getX()),abspos(p.getY()));
                 return model.indexOf(p);
             }
         }
         return -1;
+    }
+    public void animateMovement(ImageView obj, float x, float y) {
+        float finalY = y+Y_OFFSET_FOR_IMAGEVIEW*Math.min(getWidth(),getHeight())/1000;
+        ObjectAnimator xA = ObjectAnimator.ofFloat(obj,"x",x);
+        ObjectAnimator yA = ObjectAnimator.ofFloat(obj,"y",finalY);
+        AnimatorSet anime = new AnimatorSet();
+        anime.playTogether(xA,yA);
+        anime.setInterpolator(new AnticipateOvershootInterpolator());
+        anime.setDuration(1000);
+        anime.start();
+        System.out.println("Animation startad?");
     }
 }
