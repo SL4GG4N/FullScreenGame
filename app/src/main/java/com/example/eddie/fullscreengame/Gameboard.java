@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
 
+import controllers.LogicMessage;
 import models.NineMenMorrisModel;
 import models.Point;
+import views.PawnView;
 
 /**
  * Created by simonlundstrom on 25/11/16.
@@ -28,7 +30,7 @@ public class Gameboard extends View {
     private static final int CIRCLE_RADIUS = 20;
     private static final int CLICK_RADIUS= 60;
     private static final int Y_OFFSET_FOR_IMAGEVIEW = 235;
-    private ImageView[] pawns;
+    private PawnView[] pawns;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -109,8 +111,8 @@ public class Gameboard extends View {
     }
     public void animateMovement(ImageView obj, float x, float y) {
         float finalY = y+Y_OFFSET_FOR_IMAGEVIEW*Math.min(getWidth(),getHeight())/1000;
-        ObjectAnimator xA = ObjectAnimator.ofFloat(obj,"x",x);
-        ObjectAnimator yA = ObjectAnimator.ofFloat(obj,"y",finalY);
+        ObjectAnimator xA = ObjectAnimator.ofFloat(obj,"x",x-obj.getWidth()/2);
+        ObjectAnimator yA = ObjectAnimator.ofFloat(obj,"y",finalY-obj.getWidth()/2);
         AnimatorSet anime = new AnimatorSet();
         anime.playTogether(xA,yA);
         anime.setInterpolator(new AnticipateOvershootInterpolator());
@@ -119,10 +121,26 @@ public class Gameboard extends View {
         System.out.println("Animation startad?");
     }
 
-    public void move(ImageView obj, int toPosition) {
-        animateMovement(obj, abspos(model.getPoint(toPosition).getX()),abspos(model.getPoint(toPosition).getY()));
+    public boolean move(int fromPosition, int toPosition) {
+        PawnView pawnToMove=null;
+        if (fromPosition== LogicMessage.FROM_WHITE_STASH) {
+            for (int i=0;i<9;i++){
+                if (pawns[i].getPlace()<0) pawnToMove = pawns[i];
+            }
+        }
+        if (fromPosition==LogicMessage.FROM_BLACK_STASH) {
+            for (int i=9; i<18;i++) {
+                if (pawns[i].getPlace()<0) pawnToMove = pawns[i];
+            }
+        }
+
+        if (pawnToMove==null) return false;
+        pawnToMove.setPlace(toPosition);
+        animateMovement(pawnToMove, abspos(model.getPoint(toPosition).getX()),abspos(model.getPoint(toPosition).getY()));
+        return true;
     }
-    public void setPawns(ImageView[] pawns) {
+
+    public void setPawns(PawnView[] pawns) {
         this.pawns=pawns;
     }
 

@@ -10,14 +10,14 @@ public class GameLogic {
 
     private Gamestate state;
 
-    private static NineMenMorrisModel model;
+    private NineMenMorrisModel model;
 
     public GameLogic() {
         model = new NineMenMorrisModel();
         state = Gamestate.IDLE;
     }
 
-    public static NineMenMorrisModel getModel() {
+    public NineMenMorrisModel getModel() {
         return model;
     }
 
@@ -26,9 +26,23 @@ public class GameLogic {
         return new LogicMessage(LogicMessage.WHITE_PLACE,-1,-1);
     }
 
+    //ALL spellogik
     public LogicMessage handleClick(int p) {
         switch(state) {
             case IDLE: return new LogicMessage(LogicMessage.ERROR_GAME_IDLE,-1,-1);
+            case WHITE_TO_PLACE: {
+                if (model.getPoint(p).isEmpty()) {
+                    state=Gamestate.BLACK_TO_PLACE;
+                    return new LogicMessage(LogicMessage.BLACK_PLACE,LogicMessage.FROM_WHITE_STASH,p);
+                }
+                else return new LogicMessage(LogicMessage.ERROR_OCCUPIED_PLACE,LogicMessage.DO_NOTHING,LogicMessage.DO_NOTHING);
+            }
+            case BLACK_TO_PLACE: {
+                if (model.getPoint(p).isEmpty()) {
+                    state=Gamestate.WHITE_TO_PLACE;
+                    return new LogicMessage(LogicMessage.WHITE_PLACE,LogicMessage.FROM_BLACK_STASH,p);
+                }
+            }
             default: return new LogicMessage(LogicMessage.ERROR_UNKNOWN_STATE,-1,-1);
         }
     }

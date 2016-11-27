@@ -6,6 +6,7 @@ package controllers;
 
 public class LogicMessage {
     private int messageCode,moveFrom,moveTo;
+    // MessageCodes
     public static final int WHITE_PLACE=1;
     public static final int BLACK_PLACE=2;
     public static final int WHITE_REMOVE=3;
@@ -18,6 +19,11 @@ public class LogicMessage {
     public static final int ERROR_CHOOSE_PAWN=10;
     public static final int ERROR_GAME_IDLE=11;
     public static final int ERROR_UNKNOWN_STATE=12;
+    // ToFrom statements (0--23 {r platser p} br{det)
+    public static final int DO_NOTHING = -1;
+    public static final int FROM_WHITE_STASH = -2;
+    public static final int FROM_BLACK_STASH = -3;
+    public static final int TO_DISCARD_PILE = -4;
 
     public int getMessageCode() {
         return messageCode;

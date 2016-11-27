@@ -6,7 +6,20 @@ package models;
 
 public class Point{
     private int x,y;
+
     public Status status;
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public boolean isEmpty() {
+        return (status==Status.EMPTY);
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public int getX() {
         return x;

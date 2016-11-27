@@ -29,10 +29,10 @@
         android:textAllCaps="true"
         android:textSize="@dimen/font_size" />
 
-    <ImageView
+    <view class="views.PawnView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/sidlogga"
+        app:srcCompat="@drawable/white_pawn"
         android:id="@+id/pawn" />
 </RelativeLayout>
 

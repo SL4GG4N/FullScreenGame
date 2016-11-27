@@ -5,19 +5,19 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import controllers.GameLogic;
 import controllers.LogicMessage;
+import views.PawnView;
 
 public class MainActivity extends AppCompatActivity {
 
     public static Gameboard spelbrade;
     public static GameLogic logik;
     private TextView infoPanel;
-    public ImageView[] pawns;
+    public PawnView[] pawns;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,29 +41,44 @@ public class MainActivity extends AppCompatActivity {
         infoPanel.setText("Här ska det stå nåt");
 
         // Alla pj{ser.
-        pawns = new ImageView[18];
-        pawns[0]= (ImageView)findViewById(R.id.pawn);
+        pawns = new PawnView[18];
+        pawns[0]= (PawnView) findViewById(R.id.pawn);
         for (int i=0; i<18; i++) {
-            if (pawns[i]==null) pawns[i]= new ImageView(this);
-            pawns[i].setImageResource(R.drawable.sidlogga);
+            if (pawns[i]==null) pawns[i]= new PawnView(this);
+            if (i<9) pawns[i].setImageResource(R.drawable.white_pawn);
+            else pawns[i].setImageResource(R.drawable.black_pawn);
             pawns[i].setLayoutParams(pawns[0].getLayoutParams());
             pawns[i].setX((i%9)*100);
-            pawns[i].setY(1300+(i/9)*100);
-            pawns[i].setMaxHeight(100);
-            pawns[i].setMaxWidth(100);
+            pawns[i].setY(1350+(i/9)*100);
+            pawns[i].setMaxHeight(102);
+            pawns[i].setMaxWidth(102);
             pawns[i].setAdjustViewBounds(true);
             if (i>0) addContentView(pawns[i],pawns[i].getLayoutParams());
         }
         spelbrade.setPawns(pawns);
         spelbrade.setModel(logik.getModel());
+        logik.startNewGame();
     }
 
     // Tar emot svaren
     private void obeyLogic(LogicMessage message) {
+        boolean success=true;
         switch (message.getMessageCode()) {
             case LogicMessage.ERROR_GAME_IDLE: infoPanel.setText(getResources().getString(R.string.game_idle));
-            break;
+                break;
+            case LogicMessage.WHITE_PLACE: {
+                infoPanel.setText(getResources().getString(R.string.white_place));
+                success = spelbrade.move(message.getMoveFrom(),message.getMoveTo());
+            }
+                break;
+            case LogicMessage.BLACK_PLACE: {
+                infoPanel.setText(getResources().getString(R.string.black_place));
+                success = spelbrade.move(message.getMoveFrom(),message.getMoveTo());
+            }
+                break;
+            default: infoPanel.setText("UNKNOWN COMMAND...");
         }
+        if (!success) infoPanel.setText("HORRIBLE ERROR...");
     }
 
     // Om n}gon klickar p} spelbr{det, valideras det av spelbr{det,
