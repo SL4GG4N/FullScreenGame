@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
@@ -31,6 +32,7 @@ public class Gameboard extends View {
     private static final int CLICK_RADIUS= 60;
     private static final int Y_OFFSET_FOR_IMAGEVIEW = 235;
     private PawnView[] pawns;
+    private static Drawable background;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -45,6 +47,8 @@ public class Gameboard extends View {
     private void drawNineMenMorrisBoard(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
+        background.setBounds(0,0,getWidth(),getHeight());
+        background.draw(canvas);
         // Draw the outline
         float[] outline = {0,0,getWidth(),0,
                            getWidth(),0,getWidth(),getHeight(),
@@ -96,6 +100,7 @@ public class Gameboard extends View {
 
     private void init() {
         p = new Paint();
+        background = getResources().getDrawable(R.drawable.wooden_surface);
     }
 
     public int validateClick(int x, int y) {

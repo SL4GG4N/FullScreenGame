@@ -9,7 +9,6 @@ import models.NineMenMorrisModel;
 public class GameLogic {
 
     private Gamestate state;
-
     private NineMenMorrisModel model;
 
     public GameLogic() {

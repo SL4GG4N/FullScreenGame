@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NineMenMorris</string>
+    <string name="app_name">Kvarnspel</string>
     <string name="game_idle">Spelet har inte börjat!</string>
     <string name="white_place">Vit, placera en pjäs.</string>
     <string name="black_place">Svart, placera en pjäs.</string>
