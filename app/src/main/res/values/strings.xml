@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NineMenMorris</string>
+    <string name="game_idle">Spelet har inte börjat!</string>
 </resources>

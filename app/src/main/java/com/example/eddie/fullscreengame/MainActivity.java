@@ -9,16 +9,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import controllers.GameLogic;
+import controllers.LogicMessage;
+
 public class MainActivity extends AppCompatActivity {
 
     public static Gameboard spelbrade;
-    public TextView infoPanel;
+    public static GameLogic logik;
+    private TextView infoPanel;
     public ImageView[] pawns;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        logik = new GameLogic();
 
         // Omforma br{det till en fyrkant
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -31,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
         spelbrade.setOnTouchListener(new GameboardTouchListener());
 
         // Initialisera textf{ltet.
-        infoPanel = (TextView)findViewById(R.id.textView);
+        infoPanel = (TextView)findViewById(R.id.infoPane);
         infoPanel.setText("Här ska det stå nåt");
 
         // Alla pj{ser.
         pawns = new ImageView[18];
-        pawns[0]= (ImageView)findViewById(R.id.imageView);
+        pawns[0]= (ImageView)findViewById(R.id.pawn);
         for (int i=0; i<18; i++) {
             if (pawns[i]==null) pawns[i]= new ImageView(this);
             pawns[i].setImageResource(R.drawable.sidlogga);
@@ -48,16 +54,30 @@ public class MainActivity extends AppCompatActivity {
             pawns[i].setAdjustViewBounds(true);
             if (i>0) addContentView(pawns[i],pawns[i].getLayoutParams());
         }
+        spelbrade.setPawns(pawns);
+        spelbrade.setModel(logik.getModel());
     }
 
+    // Tar emot svaren
+    private void obeyLogic(LogicMessage message) {
+        switch (message.getMessageCode()) {
+            case LogicMessage.ERROR_GAME_IDLE: infoPanel.setText(getResources().getString(R.string.game_idle));
+            break;
+        }
+    }
+
+    // Om n}gon klickar p} spelbr{det, valideras det av spelbr{det,
+    // och om detta returnerar noll eller |ver, skickas det in i spellogiken.
+    // Kanske skulle man skicka in det i spellogiken direkt, men jag vet inte.
     private class GameboardTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent me) {
             if (me.getAction()==MotionEvent.ACTION_DOWN) {
-                int p = spelbrade.validateClick(pawns[0], (int)me.getX(),(int)me.getY());
+                int p = spelbrade.validateClick((int)me.getX(),(int)me.getY());
                 infoPanel.setText("Du träffade "+ p);
                 if (p>=0) {
                     System.out.println("MainActivity såg en träff.");
+                    obeyLogic(logik.handleClick(p));
                 }
             }
             return true;
