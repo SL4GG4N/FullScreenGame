@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         logik = new GameLogic();
 
-        // Omforma br{det till en fyrkant
+        // Omforma br{det till en fyrkant och sätt dit lyssnare.
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
