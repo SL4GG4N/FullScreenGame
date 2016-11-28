@@ -71,8 +71,9 @@ public class GameLogic {
             break;
             case MOVING_PAWNS: {
                 if (!model.getPoint(p).isEmpty()) throw new GameLogicException(state.toString());
-                else
-                    returnMessage = new LogicMessage(placeToMoveFrom, p);
+                returnMessage = new LogicMessage(placeToMoveFrom, p);
+                model.getPoint(p).setStatus(model.getPoint(placeToMoveFrom).getStatus());
+                model.getPoint(placeToMoveFrom).setStatus(Point.Status.EMPTY);
                 blacksTurn = !blacksTurn;
                 returnMessage.setBlacksTurn(blacksTurn);
                 returnMessage.setNextMove(LogicMessage.CHOOSE_PAWN);
