@@ -136,10 +136,13 @@ public class Gameboard extends View {
                 if (pawns[i].getPlace()<0) pawnToMove = pawns[i];
             }
         }
-        if (fromPosition==LogicMessage.FROM_BLACK_STASH) {
+        else if (fromPosition==LogicMessage.FROM_BLACK_STASH) {
             for (int i=9; i<18;i++) {
                 if (pawns[i].getPlace()<0) pawnToMove = pawns[i];
             }
+        }
+        else {
+            for (PawnView pawn : pawns) if (pawn.getPlace()==fromPosition) pawnToMove = pawn;
         }
         if (pawnToMove==null) return false;
         pawnToMove.setPlace(toPosition);
