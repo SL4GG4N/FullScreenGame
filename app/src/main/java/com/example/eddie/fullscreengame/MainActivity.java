@@ -11,6 +11,7 @@ import android.widget.Toast;
 import controllers.GameLogic;
 import controllers.GameLogicException;
 import controllers.LogicMessage;
+import views.Gameboard;
 import views.PawnView;
 
 public class MainActivity extends AppCompatActivity {
@@ -81,8 +82,13 @@ public class MainActivity extends AppCompatActivity {
             case LogicMessage.MOVE_PAWN: {
                 string.append(getString(R.string.move));
             }
+            break;
+            case LogicMessage.REMOVE_PAWN: {
+                string.append(getString(R.string.remove));
+            }
+            break;
             default:
-                infoPanel.setText("UNKNOWN NEXT MOVE...");
+                string.append("UNKNOWN NEXT MOVE...");
         }
         if (!success) infoPanel.setText("HORRIBLE ERROR...");
         else infoPanel.setText(string.toString());

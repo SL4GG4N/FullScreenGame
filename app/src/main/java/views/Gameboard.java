@@ -1,4 +1,4 @@
-package com.example.eddie.fullscreengame;
+package views;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
+
+import com.example.eddie.fullscreengame.R;
 
 import controllers.LogicMessage;
 import models.NineMenMorrisModel;
@@ -133,12 +135,12 @@ public class Gameboard extends View {
             return true;
         if (fromPosition== LogicMessage.FROM_WHITE_STASH) {
             for (int i=0;i<9;i++){
-                if (pawns[i].getPlace()<0) pawnToMove = pawns[i];
+                if (pawns[i].getPlace()==-1) pawnToMove = pawns[i];
             }
         }
         else if (fromPosition==LogicMessage.FROM_BLACK_STASH) {
             for (int i=9; i<18;i++) {
-                if (pawns[i].getPlace()<0) pawnToMove = pawns[i];
+                if (pawns[i].getPlace()==-1) pawnToMove = pawns[i];
             }
         }
         else {
@@ -146,7 +148,12 @@ public class Gameboard extends View {
         }
         if (pawnToMove==null) return false;
         pawnToMove.setPlace(toPosition);
-        animateMovement(pawnToMove, abspos(model.getPoint(toPosition).getX()),abspos(model.getPoint(toPosition).getY()));
+        if (toPosition == LogicMessage.TO_DISCARD_PILE) {
+            animateMovement(pawnToMove,-100,-100);
+        }
+        else {
+            animateMovement(pawnToMove, abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()));
+        }
         return true;
     }
 
