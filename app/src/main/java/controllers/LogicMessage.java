@@ -5,28 +5,33 @@ package controllers;
  */
 
 public class LogicMessage {
-    private int messageCode,moveFrom,moveTo;
+    private int moveFrom,moveTo, nextMove;
+    private boolean blacksTurn;
     // MessageCodes
-    public static final int WHITE_PLACE=1;
-    public static final int BLACK_PLACE=2;
-    public static final int WHITE_REMOVE=3;
-    public static final int BLACK_REMOVE=4;
-    public static final int WHITE_CHOOSE_PAWN=5;
-    public static final int BLACK_CHOOSE_PAWN=6;
-    public static final int WHITE_MOVE=7;
-    public static final int BLACK_MOVE=8;
-    public static final int ERROR_OCCUPIED_PLACE=9;
-    public static final int ERROR_CHOOSE_PAWN=10;
-    public static final int ERROR_GAME_IDLE=11;
-    public static final int ERROR_UNKNOWN_STATE=12;
+    public static final int PLACE_PAWN =1;
+    public static final int REMOVE_PAWN=3;
+    public static final int CHOOSE_PAWN=5;
+    public static final int MOVE_PAWN=7;
     // ToFrom statements (0--23 {r platser p} br{det)
-    public static final int DO_NOTHING = -1;
     public static final int FROM_WHITE_STASH = -2;
     public static final int FROM_BLACK_STASH = -3;
     public static final int TO_DISCARD_PILE = -4;
+    public static final int HIGHLIGHT = -5;
 
-    public int getMessageCode() {
-        return messageCode;
+    void setNextMove(int code) {
+        nextMove =code;
+    }
+
+    public int getNextMove() {
+        return nextMove;
+    }
+
+    public void setBlacksTurn(boolean blacksTurn) {
+        this.blacksTurn = blacksTurn;
+    }
+
+    public boolean isBlacksTurn() {
+        return blacksTurn;
     }
 
     public int  getMoveFrom() {
@@ -37,9 +42,15 @@ public class LogicMessage {
         return moveTo;
     }
 
-    public LogicMessage(int messageCode, int moveFrom, int moveTo) {
-        this.messageCode = messageCode;
+    public LogicMessage(int moveFrom, int moveTo) {
         this.moveFrom = moveFrom;
         this.moveTo = moveTo;
+    }
+
+    LogicMessage(int moveFrom, int moveTo, int nextMove, boolean blacksTurn) {
+        this.nextMove = nextMove;
+        this.moveFrom = moveFrom;
+        this.moveTo = moveTo;
+        this.blacksTurn = blacksTurn;
     }
 }
