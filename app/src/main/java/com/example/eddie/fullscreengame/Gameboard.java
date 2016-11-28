@@ -77,6 +77,7 @@ public class Gameboard extends View {
         for (Point p : model.getPoints()) {
             canvas.drawCircle(abspos(p.getX()), abspos(p.getY()), radius, paint);
         }
+
     }
 
     private int abspos(int relpos) {
