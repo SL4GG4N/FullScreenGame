@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
             if (i < 9) pawns[i].setImageResource(R.drawable.white_pawn);
             else pawns[i].setImageResource(R.drawable.black_pawn);
             pawns[i].setLayoutParams(pawns[0].getLayoutParams());
-            pawns[i].setX((i % 9) * 100);
-            pawns[i].setY(1350 + (i / 9) * 100);
-            pawns[i].setMaxHeight(102);
-            pawns[i].setMaxWidth(102);
+            pawns[i].setX((i % 9) * (int)(size*0.09));
+            pawns[i].setY((int)(size*1.23) + (i / 9) * (int)(size*0.09));
+            pawns[i].setMaxHeight((int)(size*0.09));
+            pawns[i].setMaxWidth((int)(size*0.09));
             pawns[i].setAdjustViewBounds(true);
             if (i > 0) addContentView(pawns[i], pawns[i].getLayoutParams());
         }
