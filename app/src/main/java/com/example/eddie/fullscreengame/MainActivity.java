@@ -3,6 +3,9 @@ package com.example.eddie.fullscreengame;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -92,6 +95,35 @@ public class MainActivity extends AppCompatActivity {
         }
         if (!success) infoPanel.setText("HORRIBLE ERROR...");
         else infoPanel.setText(string.toString());
+    }
+
+    /**
+     * Overriding this Activity's onCreateOptionsMenu method. A ContextMenu for
+     * managing To-DoItems (remove)
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Overriding the Activity's onOptionsItemSelected method. This is where we
+     * define what actions to take when a option menu item is selected.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_new_game:
+                //TODO: restart game code here
+                logik.startNewGame();
+                return true;
+            default:
+                // Other alternatives -> default behavior
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     // Om n}gon klickar p} spelbr{det, valideras det av spelbr{det,
