@@ -1,7 +1,9 @@
 package com.example.eddie.fullscreengame;
 
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,6 +11,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,16 +30,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-
         logik = new GameLogic();
 
         // Omforma br{det till en fyrkant och sätt dit lyssnare.
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
-        int yOffset = (Math.max(displaymetrics.heightPixels,displaymetrics.widthPixels)-size)/2;
-        System.out.println("Y-OFFSET="+yOffset);
+        int yOffset = (Math.max(displaymetrics.heightPixels, displaymetrics.widthPixels) - size) / 2;
+        System.out.println("Y-OFFSET=" + yOffset);
         spelbrade = (Gameboard) findViewById(R.id.Gameboard);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
@@ -100,24 +104,23 @@ public class MainActivity extends AppCompatActivity {
         else infoPanel.setText(string.toString());
     }
 
+
     /**
      * Overriding this Activity's onCreateOptionsMenu method. A ContextMenu for
      * managing To-DoItems (remove)
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+     */
 
     /**
      * Overriding the Activity's onOptionsItemSelected method. This is where we
      * define what actions to take when a option menu item is selected.
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.action_new_game:
                 //TODO: restart game code here
@@ -128,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+     */
 
     // Om n}gon klickar p} spelbr{det, valideras det av spelbr{det,
     // och om detta returnerar noll eller |ver, skickas det in i spellogiken.
@@ -139,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 int p = spelbrade.validateClick((int) me.getX(), (int) me.getY());
 //                infoPanel.setText("Du träffade " + p);
                 if (p >= 0) {
-                    System.out.println("MainActivity såg en träff på "+p);
+                    System.out.println("MainActivity såg en träff på " + p);
                     try {
                         obeyLogic(logik.handleClick(p));
                     } catch (GameLogicException gle) {
