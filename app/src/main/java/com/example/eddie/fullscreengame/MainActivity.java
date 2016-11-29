@@ -100,7 +100,11 @@ public class MainActivity extends AppCompatActivity {
             default:
                 string.append("UNKNOWN NEXT MOVE...");
         }
-        success= spelbrade.move(message.getPawnToMove(), message.getMoveTo());
+
+        if(/*getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE*/ true){
+            success= spelbrade.move(message.getPawnToMove(), message.getMoveTo());
+            //Do some stuff
+        }//  else success = nånting annat
         if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
         else infoPanel.setText(string.toString());
     }
