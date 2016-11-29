@@ -31,7 +31,7 @@ public class Gameboard extends View {
     private static final int POINT_POSITION_TO_PIXEL = 125;
     private static final int CIRCLE_RADIUS = 20;
     private static final int CLICK_RADIUS= 60;
-    private static final int Y_OFFSET_FOR_IMAGEVIEW = 214;
+    private static final int Y_OFFSET_FOR_IMAGEVIEW = 0;
     private ImageView[] pawnImages;
     private static Drawable background;
 
