@@ -31,9 +31,10 @@ public class Gameboard extends View {
     private static final int POINT_POSITION_TO_PIXEL = 125;
     private static final int CIRCLE_RADIUS = 20;
     private static final int CLICK_RADIUS= 60;
-    private static final int Y_OFFSET_FOR_IMAGEVIEW = 0;
+    private static final int Y_OFFSET_FOR_IMAGEVIEW = 357;
     private ImageView[] pawnImages;
     private static Drawable background;
+    private static int offset;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -115,10 +116,11 @@ public class Gameboard extends View {
         }
         return -1;
     }
-    public void animateMovement(ImageView obj, float x, float y) {
-        float finalY = y+Y_OFFSET_FOR_IMAGEVIEW*Math.min(getWidth(),getHeight())/1000;
+    public void animateMovement(ImageView obj, float x, float y,boolean portrait) {
+        if (portrait) y+=offset;
+        else x+=offset;
         ObjectAnimator xA = ObjectAnimator.ofFloat(obj,"x",x-obj.getWidth()/2);
-        ObjectAnimator yA = ObjectAnimator.ofFloat(obj,"y",finalY-obj.getWidth()/2);
+        ObjectAnimator yA = ObjectAnimator.ofFloat(obj,"y",y-obj.getWidth()/2);
         AnimatorSet anime = new AnimatorSet();
         anime.playTogether(xA,yA);
         anime.setInterpolator(new AnticipateOvershootInterpolator());
@@ -126,28 +128,28 @@ public class Gameboard extends View {
         anime.start();
     }
 
-    public boolean move(int pawnToMove, int toPosition) {
+    public boolean move(int pawnToMove, int toPosition,boolean portrait) {
         if (pawnToMove==model.getPawns().length) {
             if (toPosition<0) {
                 int gameboardWidth = Math.min(getWidth(), getHeight());
                 for (int i = 0; i < pawnImages.length; i++) {
                     animateMovement(pawnImages[i], gameboardWidth * 0.05f + (i % 9) * (int) (gameboardWidth * 0.09),
-                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09));
+                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09),portrait);
                 }
             }
             else for (int i=0; i<pawnImages.length; i++) {
                 Point p = model.getPoint(model.getPawn(i).getPosition());
-                animateMovement(pawnImages[pawnToMove], abspos(p.getX()), abspos(p.getY()));
+                animateMovement(pawnImages[pawnToMove], abspos(p.getX()), abspos(p.getY()),portrait);
             }
             return true;
         }
         if (toPosition==LogicMessage.HIGHLIGHT) return true;
         if (pawnToMove==-1) return false;
         if (toPosition == LogicMessage.TO_DISCARD_PILE) {
-            animateMovement(pawnImages[pawnToMove],-100,-100);
+            animateMovement(pawnImages[pawnToMove],-100,-100,portrait);
         }
         else {
-            animateMovement(pawnImages[pawnToMove], abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()));
+            animateMovement(pawnImages[pawnToMove], abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()),portrait);
         }
         return true;
     }
@@ -158,5 +160,9 @@ public class Gameboard extends View {
 
     public void setModel(NineMenMorrisModel model) {
         this.model = model;
+    }
+
+    public void setAnimationOffset(int offset) {
+        this.offset = offset;
     }
 }

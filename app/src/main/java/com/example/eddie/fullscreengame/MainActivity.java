@@ -1,5 +1,6 @@
 package com.example.eddie.fullscreengame;
 
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     public static GameLogic logik;
     private TextView infoPanel;
     public ImageView[] pawnImages;
+    boolean portrait;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +31,13 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         logik = new GameLogic();
+        portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
         // Omforma br{det till en fyrkant och sätt dit lyssnare.
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
-        int yOffset = (Math.max(displaymetrics.heightPixels, displaymetrics.widthPixels) - size) / 2;
-        System.out.println("Y-OFFSET=" + yOffset);
+        int offset = (Math.max(displaymetrics.heightPixels, displaymetrics.widthPixels) - size) / 2;
         spelbrade = (Gameboard) findViewById(R.id.Gameboard);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
@@ -60,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
         }
         spelbrade.setPawns(pawnImages);
         spelbrade.setModel(logik.getModel());
-        spelbrade.move(pawnImages.length,-1);
+        spelbrade.move(pawnImages.length,-1,portrait);
+        spelbrade.setAnimationOffset(offset);
         obeyLogic(logik.startNewGame());
     }
 
@@ -96,10 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 string.append("UNKNOWN NEXT MOVE...");
         }
 
-        if(/*getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE*/ true){
-            success= spelbrade.move(message.getPawnToMove(), message.getMoveTo());
-            //Do some stuff
-        }//  else success = nånting annat
+        success= spelbrade.move(message.getPawnToMove(), message.getMoveTo(),portrait);
         if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
         else infoPanel.setText(string.toString());
     }
