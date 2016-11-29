@@ -28,19 +28,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            //Do some stuff
-            setContentView(R.layout.activity_main);
-        }else setContentView(R.layout.activity_main_landscape);
-
+        setContentView(R.layout.activity_main);
         logik = new GameLogic();
 
         // Omforma br{det till en fyrkant och sätt dit lyssnare.
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
-        int yOffset = (Math.max(displaymetrics.heightPixels,displaymetrics.widthPixels)-size)/2;
-        System.out.println("Y-OFFSET="+yOffset);
+        int yOffset = (Math.max(displaymetrics.heightPixels, displaymetrics.widthPixels) - size) / 2;
+        System.out.println("Y-OFFSET=" + yOffset);
         spelbrade = (Gameboard) findViewById(R.id.Gameboard);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
@@ -58,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
             if (i < 9) pawns[i].setImageResource(R.drawable.white_pawn);
             else pawns[i].setImageResource(R.drawable.black_pawn);
             pawns[i].setLayoutParams(pawns[0].getLayoutParams());
-            pawns[i].setMaxHeight((int)(size*0.09));
-            pawns[i].setMaxWidth((int)(size*0.09));
+            pawns[i].setMaxHeight((int) (size * 0.09));
+            pawns[i].setMaxWidth((int) (size * 0.09));
             pawns[i].setAdjustViewBounds(true);
             if (i > 0) addContentView(pawns[i], pawns[i].getLayoutParams());
         }
         spelbrade.setPawns(pawns);
         spelbrade.setModel(logik.getModel());
-        spelbrade.move(LogicMessage.RESET_ALL,LogicMessage.RESET_ALL);
+        spelbrade.move(LogicMessage.RESET_ALL, LogicMessage.RESET_ALL);
     }
 
     // Tar emot svaren
@@ -98,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
             default:
                 string.append("UNKNOWN NEXT MOVE...");
         }
-        if (message.getNextMove()!=LogicMessage.GAME_OVER)
-            success= spelbrade.move(message.getMoveFrom(), message.getMoveTo());
+        if (message.getNextMove() != LogicMessage.GAME_OVER)
+            success = spelbrade.move(message.getMoveFrom(), message.getMoveTo());
         if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
         else infoPanel.setText(string.toString());
     }
@@ -142,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 int p = spelbrade.validateClick((int) me.getX(), (int) me.getY());
 //                infoPanel.setText("Du träffade " + p);
                 if (p >= 0) {
-                    System.out.println("MainActivity såg en träff på "+p);
+                    System.out.println("MainActivity såg en träff på " + p);
                     try {
                         obeyLogic(logik.handleClick(p));
                     } catch (GameLogicException gle) {
