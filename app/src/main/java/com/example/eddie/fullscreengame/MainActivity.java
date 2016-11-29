@@ -3,12 +3,14 @@ package com.example.eddie.fullscreengame;
 import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         logik = new GameLogic();
 
@@ -100,21 +104,21 @@ public class MainActivity extends AppCompatActivity {
         else infoPanel.setText(string.toString());
     }
 
+
     /**
      * Overriding this Activity's onCreateOptionsMenu method. A ContextMenu for
      * managing To-DoItems (remove)
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+     */
 
     /**
      * Overriding the Activity's onOptionsItemSelected method. This is where we
      * define what actions to take when a option menu item is selected.
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -127,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+     */
 
     // Om n}gon klickar p} spelbr{det, valideras det av spelbr{det,
     // och om detta returnerar noll eller |ver, skickas det in i spellogiken.

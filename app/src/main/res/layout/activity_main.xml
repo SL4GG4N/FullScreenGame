@@ -34,4 +34,5 @@
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/white_pawn"
         android:id="@+id/pawn" />
+
 </RelativeLayout>
