@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialisera textf{ltet.
         infoPanel = (TextView) findViewById(R.id.infoPane);
-        infoPanel.setText("Här ska det stå nåt");
 
         // Alla pj{ser.
         pawns = new PawnView[18];
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             default:
                 string.append("UNKNOWN NEXT MOVE...");
         }
-        if (!success) infoPanel.setText("HORRIBLE ERROR...");
+        if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
         else infoPanel.setText(string.toString());
     }
 
@@ -101,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View view, MotionEvent me) {
             if (me.getAction() == MotionEvent.ACTION_DOWN) {
                 int p = spelbrade.validateClick((int) me.getX(), (int) me.getY());
-                infoPanel.setText("Du träffade " + p);
+//                infoPanel.setText("Du träffade " + p);
                 if (p >= 0) {
-                    System.out.println("MainActivity såg en träff.");
+                    System.out.println("MainActivity såg en träff på "+p);
                     try {
                         obeyLogic(logik.handleClick(p));
                     } catch (GameLogicException gle) {
