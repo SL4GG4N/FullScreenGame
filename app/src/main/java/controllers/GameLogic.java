@@ -28,10 +28,11 @@ public class GameLogic {
     }
 
     public LogicMessage startNewGame() {
+        model = new NineMenMorrisModel();
         state = Gamestate.PLACING_PAWNS;
         gameCounter = 0;
         blacksTurn = false;
-        return new LogicMessage(-1, -1, LogicMessage.PLACE_PAWN, blacksTurn);
+        return new LogicMessage(LogicMessage.RESET_ALL, LogicMessage.RESET_ALL, LogicMessage.PLACE_PAWN, blacksTurn);
     }
 
     //ALL spellogik

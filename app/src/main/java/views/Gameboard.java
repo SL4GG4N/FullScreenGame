@@ -131,6 +131,15 @@ public class Gameboard extends View {
 
     public boolean move(int fromPosition, int toPosition) {
         PawnView pawnToMove=null;
+        if (fromPosition==LogicMessage.RESET_ALL) {
+            int gameboardWidth=Math.min(getWidth(),getHeight());
+            for (int i=0; i<pawns.length; i++) {
+                animateMovement(pawns[i],gameboardWidth*0.05f+ (i % 9) * (int)(gameboardWidth*0.09),
+                        (gameboardWidth*1.05f) + (i / 9) * (int)(gameboardWidth*0.09));
+            }
+            return true;
+        }
+
         if (fromPosition==LogicMessage.HIGHLIGHT)
             return true;
         if (fromPosition== LogicMessage.FROM_WHITE_STASH) {

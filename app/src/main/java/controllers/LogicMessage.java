@@ -8,6 +8,7 @@ public class LogicMessage {
     private int moveFrom,moveTo, nextMove;
     private boolean blacksTurn;
     // MessageCodes
+    public static final int RESET_ALL=2;
     public static final int PLACE_PAWN =1;
     public static final int REMOVE_PAWN=3;
     public static final int CHOOSE_PAWN=5;

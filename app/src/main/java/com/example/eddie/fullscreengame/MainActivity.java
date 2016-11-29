@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
             if (i < 9) pawns[i].setImageResource(R.drawable.white_pawn);
             else pawns[i].setImageResource(R.drawable.black_pawn);
             pawns[i].setLayoutParams(pawns[0].getLayoutParams());
-            pawns[i].setX((i % 9) * (int)(size*0.09));
-            pawns[i].setY((int)(size*1.23) + (i / 9) * (int)(size*0.09));
             pawns[i].setMaxHeight((int)(size*0.09));
             pawns[i].setMaxWidth((int)(size*0.09));
             pawns[i].setAdjustViewBounds(true);
@@ -61,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         }
         spelbrade.setPawns(pawns);
         spelbrade.setModel(logik.getModel());
+        spelbrade.move(LogicMessage.RESET_ALL,LogicMessage.RESET_ALL);
     }
 
     // Tar emot svaren
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_new_game:
                 //TODO: restart game code here
-                logik.startNewGame();
+                obeyLogic(logik.startNewGame());
                 return true;
             default:
                 // Other alternatives -> default behavior
