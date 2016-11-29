@@ -115,6 +115,8 @@ public class GameLogic {
                 returnMessage.setBlacksTurn(blacksTurn);
                 if (blacksTurn && numberOfPawnsLeft(blacksTurn)<4) blackFlying=true;
                 if (!blacksTurn && numberOfPawnsLeft(blacksTurn)<4) whiteFlying=true;
+/*                if (numberOfPawnsLeft(true)<3 || numberOfPawnsLeft(false)<3)
+                    returnMessage = new LogicMessage(0,0,LogicMessage.GAME_OVER,blacksTurn);*/
             }
         }
         return returnMessage;
@@ -124,6 +126,8 @@ public class GameLogic {
         Point.Status player;
         if (blacksTurn) player = Point.Status.BLACK;
         else player = Point.Status.WHITE;
+
+
         int noOfPawns=0;
         for (Point p : model.getPoints()) if (p.getStatus()==player) noOfPawns++;
         return noOfPawns;

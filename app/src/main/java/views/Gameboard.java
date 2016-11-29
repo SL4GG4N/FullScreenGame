@@ -126,7 +126,6 @@ public class Gameboard extends View {
         anime.setInterpolator(new AnticipateOvershootInterpolator());
         anime.setDuration(1000);
         anime.start();
-        System.out.println("Animation startad?");
     }
 
     public boolean move(int fromPosition, int toPosition) {
@@ -134,12 +133,12 @@ public class Gameboard extends View {
         if (fromPosition==LogicMessage.RESET_ALL) {
             int gameboardWidth=Math.min(getWidth(),getHeight());
             for (int i=0; i<pawns.length; i++) {
+                pawns[i].setPlace(-1);
                 animateMovement(pawns[i],gameboardWidth*0.05f+ (i % 9) * (int)(gameboardWidth*0.09),
                         (gameboardWidth*1.05f) + (i / 9) * (int)(gameboardWidth*0.09));
             }
             return true;
         }
-
         if (fromPosition==LogicMessage.HIGHLIGHT)
             return true;
         if (fromPosition== LogicMessage.FROM_WHITE_STASH) {
@@ -155,9 +154,11 @@ public class Gameboard extends View {
         else {
             for (PawnView pawn : pawns) if (pawn.getPlace()==fromPosition) pawnToMove = pawn;
         }
+        System.out.println("position to move from : "+fromPosition+"och pawn är "+pawnToMove);
         if (pawnToMove==null) return false;
         pawnToMove.setPlace(toPosition);
         if (toPosition == LogicMessage.TO_DISCARD_PILE) {
+            System.out.println("Försöker animera åt skogen");
             animateMovement(pawnToMove,-100,-100);
         }
         else {

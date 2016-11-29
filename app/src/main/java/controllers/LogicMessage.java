@@ -8,11 +8,12 @@ public class LogicMessage {
     private int moveFrom,moveTo, nextMove;
     private boolean blacksTurn;
     // MessageCodes
-    public static final int RESET_ALL=2;
     public static final int PLACE_PAWN =1;
     public static final int REMOVE_PAWN=3;
     public static final int CHOOSE_PAWN=5;
     public static final int MOVE_PAWN=7;
+    public static final int RESET_ALL=2;
+    public static final int GAME_OVER=4;
     // ToFrom statements (0--23 {r platser p} br{det)
     public static final int FROM_WHITE_STASH = -2;
     public static final int FROM_BLACK_STASH = -3;

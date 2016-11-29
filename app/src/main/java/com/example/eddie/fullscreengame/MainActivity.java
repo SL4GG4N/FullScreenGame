@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
+        int yOffset = (Math.max(displaymetrics.heightPixels,displaymetrics.widthPixels)-size)/2;
+        System.out.println("Y-OFFSET="+yOffset);
         spelbrade = (Gameboard) findViewById(R.id.Gameboard);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
@@ -65,12 +67,14 @@ public class MainActivity extends AppCompatActivity {
     // Tar emot svaren
     private void obeyLogic(LogicMessage message) {
         boolean success = true;
-        success = spelbrade.move(message.getMoveFrom(), message.getMoveTo());
         StringBuilder string = new StringBuilder();
         if (message.isBlacksTurn()) string.append(getString(R.string.black_player));
         else string.append(getString(R.string.white_player));
         string.append(", ");
         switch (message.getNextMove()) {
+            case LogicMessage.GAME_OVER: {
+                string.append(getString(R.string.win));
+            }
             case LogicMessage.PLACE_PAWN: {
                 string.append(getString(R.string.place));
             }
@@ -90,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
             default:
                 string.append("UNKNOWN NEXT MOVE...");
         }
+        if (message.getNextMove()!=LogicMessage.GAME_OVER)
+            success= spelbrade.move(message.getMoveFrom(), message.getMoveTo());
         if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
         else infoPanel.setText(string.toString());
     }

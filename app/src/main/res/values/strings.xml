@@ -7,4 +7,5 @@
     <string name="move">välj vart du vill flytta pjäsen.</string>
     <string name="white_player">Vit</string>
     <string name="black_player">Svart</string>
+    <string name="win">har vunnit!</string>
 </resources>
