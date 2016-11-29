@@ -1,5 +1,6 @@
 package com.example.eddie.fullscreengame;
 
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -27,7 +28,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            //Do some stuff
+            setContentView(R.layout.activity_main);
+        }else setContentView(R.layout.activity_main_landscape);
 
         logik = new GameLogic();
 
@@ -117,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.action_new_game:
                 //TODO: restart game code here
