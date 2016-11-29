@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         }
         spelbrade.setPawns(pawns);
         spelbrade.setModel(logik.getModel());
-        logik.startNewGame();
     }
 
     // Tar emot svaren
