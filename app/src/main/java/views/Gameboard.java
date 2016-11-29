@@ -107,7 +107,6 @@ public class Gameboard extends View {
 
     public int validateClick(int x, int y) {
         Point finger = new Point (x,y);
-        System.out.println("Finger: "+finger);
         int CLICKRADIE = Math.min(getWidth(),getHeight())*CLICK_RADIUS/1000;
         for (Point p : model.getPoints()) {
             if (finger.distanceTo(abspos(p.getX()),abspos(p.getY())) < CLICKRADIE) {
@@ -142,11 +141,9 @@ public class Gameboard extends View {
             }
             return true;
         }
-        System.out.println("position to move from : "+model.getPawn(pawnToMove).getPosition()+" till "+toPosition);
         if (toPosition==LogicMessage.HIGHLIGHT) return true;
         if (pawnToMove==-1) return false;
         if (toPosition == LogicMessage.TO_DISCARD_PILE) {
-            System.out.println("Försöker animera åt skogen");
             animateMovement(pawnImages[pawnToMove],-100,-100);
         }
         else {

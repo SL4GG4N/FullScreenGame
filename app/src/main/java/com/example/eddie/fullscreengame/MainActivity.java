@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         spelbrade.setPawns(pawnImages);
         spelbrade.setModel(logik.getModel());
         spelbrade.move(pawnImages.length,-1);
+        obeyLogic(logik.startNewGame());
     }
 
     // Tar emot svaren
@@ -143,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 int p = spelbrade.validateClick((int) me.getX(), (int) me.getY());
 //                infoPanel.setText("Du träffade " + p);
                 if (p >= 0) {
-                    System.out.println("MainActivity såg en träff på " + p);
                     try {
                         obeyLogic(logik.handleClick(p));
                     } catch (GameLogicException gle) {

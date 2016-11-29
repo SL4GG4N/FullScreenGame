@@ -132,7 +132,6 @@ public class GameLogic {
     private int findNextStashedPawn(boolean blacksTurn) {
         int startValue= blacksTurn ? 17 : 8;
         for (int i = startValue; i>=startValue-8; i--) {
-            System.out.println("Position of pawn "+i+"="+model.getPawn(i).getPosition());
             if (model.getPawn(i).getPosition() == LogicMessage.TO_STASH) return i;
 
         }
@@ -144,17 +143,13 @@ public class GameLogic {
         int pawnsLeft=0;
         for (int i = startValue; i<startValue+9; i++)
         if (model.getPawn(i).getPosition() != LogicMessage.TO_DISCARD_PILE) pawnsLeft++;
-        System.out.println(blacksTurn+" har "+pawnsLeft+" pjäser kvar.");
         return pawnsLeft;
     }
 
     private boolean blockedPawn(int pos) {
         if ((blackFlying && isBlacksTurn) || (!isBlacksTurn && whiteFlying)) return false;
         switch (pos) {
-            case 0:{
-                System.out.println(model.getPoint(3).getStatus().toString()+","+model.getPoint(21).getStatus().toString());
-                return noneAreEmpty(3, 21);
-            }
+            case 0:return noneAreEmpty(3, 21);
             case 1:return noneAreEmpty(4, 22);
             case 2:return noneAreEmpty(23, 5);
             case 3:return noneAreEmpty(0, 6, 4);
