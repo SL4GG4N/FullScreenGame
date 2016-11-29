@@ -5,6 +5,28 @@ package models;
  */
 public class NineMenMorrisModel {
     private Point[] points;
+    private Pawn[] pawns;
+
+    public Pawn[] getPawns() {
+        return pawns;
+    }
+
+    public Pawn getPawn(int i) {
+        return pawns[i];
+    }
+
+    public Pawn getPawnAtPosition(int i) {
+        for (Pawn p : pawns) {
+            if (p.getPosition()==i) return p;
+        }
+        return null;
+    }
+
+    public int getPawnIndexAtPosition(int position) {
+        for (int i = 0; i < pawns.length; i++)
+            if (pawns[i].getPosition() == position) return i;
+        return -1;
+    }
 
     public Point getPoint(int i) {
         return points[i];
@@ -14,11 +36,19 @@ public class NineMenMorrisModel {
         return points;
     }
 
-    public int indexOf(Point p) {
+    public int getPointIndex(Point p) {
         for (int i=0; i<points.length; i++)
             if (points[i]==p)
                 return i;
         return -1;
+    }
+
+    public int getPawnIndex(Pawn p) {
+        for (int i=0; i<pawns.length; i++)
+            if (pawns[i]==p)
+                return i;
+        return -1;
+
     }
 
     public NineMenMorrisModel() {
@@ -47,5 +77,8 @@ public class NineMenMorrisModel {
         points[21]=new Point(3,4);
         points[22]=new Point(2,4);
         points[23]=new Point(1,4);
+        pawns = new Pawn[18];
+        for (int i = 0; i<pawns.length; i++)
+            pawns[i] = new Pawn();
     }
 }

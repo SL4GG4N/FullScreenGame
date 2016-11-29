@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,14 +16,13 @@ import controllers.GameLogic;
 import controllers.GameLogicException;
 import controllers.LogicMessage;
 import views.Gameboard;
-import views.PawnView;
 
 public class MainActivity extends AppCompatActivity {
 
     public static Gameboard spelbrade;
     public static GameLogic logik;
     private TextView infoPanel;
-    public PawnView[] pawns;
+    public ImageView[] pawnImages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +47,21 @@ public class MainActivity extends AppCompatActivity {
         infoPanel = (TextView) findViewById(R.id.infoPane);
 
         // Alla pj{ser.
-        pawns = new PawnView[18];
-        pawns[0] = (PawnView) findViewById(R.id.pawn);
+        pawnImages = new ImageView[18];
+        pawnImages[0] = (ImageView) findViewById(R.id.pawn);
         for (int i = 0; i < 18; i++) {
-            if (pawns[i] == null) pawns[i] = new PawnView(this);
-            if (i < 9) pawns[i].setImageResource(R.drawable.white_pawn);
-            else pawns[i].setImageResource(R.drawable.black_pawn);
-            pawns[i].setLayoutParams(pawns[0].getLayoutParams());
-            pawns[i].setMaxHeight((int)(size*0.09));
-            pawns[i].setMaxWidth((int)(size*0.09));
-            pawns[i].setAdjustViewBounds(true);
-            if (i > 0) addContentView(pawns[i], pawns[i].getLayoutParams());
+            if (pawnImages[i] == null) pawnImages[i] = new ImageView(this);
+            if (i < 9) pawnImages[i].setImageResource(R.drawable.white_pawn);
+            else pawnImages[i].setImageResource(R.drawable.black_pawn);
+            pawnImages[i].setLayoutParams(pawnImages[0].getLayoutParams());
+            pawnImages[i].setMaxHeight((int)(size*0.09));
+            pawnImages[i].setMaxWidth((int)(size*0.09));
+            pawnImages[i].setAdjustViewBounds(true);
+            if (i > 0) addContentView(pawnImages[i], pawnImages[i].getLayoutParams());
         }
-        spelbrade.setPawns(pawns);
+        spelbrade.setPawns(pawnImages);
         spelbrade.setModel(logik.getModel());
-        spelbrade.move(LogicMessage.RESET_ALL,LogicMessage.RESET_ALL);
+        spelbrade.move(pawnImages.length,-1);
     }
 
     // Tar emot svaren
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             case LogicMessage.GAME_OVER: {
                 string.append(getString(R.string.win));
             }
+            break;
             case LogicMessage.PLACE_PAWN: {
                 string.append(getString(R.string.place));
             }
@@ -94,8 +95,7 @@ public class MainActivity extends AppCompatActivity {
             default:
                 string.append("UNKNOWN NEXT MOVE...");
         }
-        if (message.getNextMove()!=LogicMessage.GAME_OVER)
-            success= spelbrade.move(message.getMoveFrom(), message.getMoveTo());
+        success= spelbrade.move(message.getPawnToMove(), message.getMoveTo());
         if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
         else infoPanel.setText(string.toString());
     }

@@ -17,7 +17,6 @@ import com.example.eddie.fullscreengame.R;
 import controllers.LogicMessage;
 import models.NineMenMorrisModel;
 import models.Point;
-import views.PawnView;
 
 /**
  * Created by simonlundstrom on 25/11/16.
@@ -33,7 +32,7 @@ public class Gameboard extends View {
     private static final int CIRCLE_RADIUS = 20;
     private static final int CLICK_RADIUS= 60;
     private static final int Y_OFFSET_FOR_IMAGEVIEW = 214;
-    private PawnView[] pawns;
+    private ImageView[] pawnImages;
     private static Drawable background;
 
     @Override
@@ -112,7 +111,7 @@ public class Gameboard extends View {
         int CLICKRADIE = Math.min(getWidth(),getHeight())*CLICK_RADIUS/1000;
         for (Point p : model.getPoints()) {
             if (finger.distanceTo(abspos(p.getX()),abspos(p.getY())) < CLICKRADIE) {
-                return model.indexOf(p);
+                return model.getPointIndex(p);
             }
         }
         return -1;
@@ -128,47 +127,36 @@ public class Gameboard extends View {
         anime.start();
     }
 
-    public boolean move(int fromPosition, int toPosition) {
-        PawnView pawnToMove=null;
-        if (fromPosition==LogicMessage.RESET_ALL) {
-            int gameboardWidth=Math.min(getWidth(),getHeight());
-            for (int i=0; i<pawns.length; i++) {
-                pawns[i].setPlace(-1);
-                animateMovement(pawns[i],gameboardWidth*0.05f+ (i % 9) * (int)(gameboardWidth*0.09),
-                        (gameboardWidth*1.05f) + (i / 9) * (int)(gameboardWidth*0.09));
+    public boolean move(int pawnToMove, int toPosition) {
+        if (pawnToMove==model.getPawns().length) {
+            if (toPosition<0) {
+                int gameboardWidth = Math.min(getWidth(), getHeight());
+                for (int i = 0; i < pawnImages.length; i++) {
+                    animateMovement(pawnImages[i], gameboardWidth * 0.05f + (i % 9) * (int) (gameboardWidth * 0.09),
+                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09));
+                }
+            }
+            else for (int i=0; i<pawnImages.length; i++) {
+                Point p = model.getPoint(model.getPawn(i).getPosition());
+                animateMovement(pawnImages[pawnToMove], abspos(p.getX()), abspos(p.getY()));
             }
             return true;
         }
-        if (fromPosition==LogicMessage.HIGHLIGHT)
-            return true;
-        if (fromPosition== LogicMessage.FROM_WHITE_STASH) {
-            for (int i=0;i<9;i++){
-                if (pawns[i].getPlace()==-1) pawnToMove = pawns[i];
-            }
-        }
-        else if (fromPosition==LogicMessage.FROM_BLACK_STASH) {
-            for (int i=9; i<18;i++) {
-                if (pawns[i].getPlace()==-1) pawnToMove = pawns[i];
-            }
-        }
-        else {
-            for (PawnView pawn : pawns) if (pawn.getPlace()==fromPosition) pawnToMove = pawn;
-        }
-        System.out.println("position to move from : "+fromPosition+"och pawn är "+pawnToMove);
-        if (pawnToMove==null) return false;
-        pawnToMove.setPlace(toPosition);
+        System.out.println("position to move from : "+model.getPawn(pawnToMove).getPosition()+" till "+toPosition);
+        if (toPosition==LogicMessage.HIGHLIGHT) return true;
+        if (pawnToMove==-1) return false;
         if (toPosition == LogicMessage.TO_DISCARD_PILE) {
             System.out.println("Försöker animera åt skogen");
-            animateMovement(pawnToMove,-100,-100);
+            animateMovement(pawnImages[pawnToMove],-100,-100);
         }
         else {
-            animateMovement(pawnToMove, abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()));
+            animateMovement(pawnImages[pawnToMove], abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()));
         }
         return true;
     }
 
-    public void setPawns(PawnView[] pawns) {
-        this.pawns=pawns;
+    public void setPawns(ImageView[] pawns) {
+        this.pawnImages=pawns;
     }
 
     public void setModel(NineMenMorrisModel model) {

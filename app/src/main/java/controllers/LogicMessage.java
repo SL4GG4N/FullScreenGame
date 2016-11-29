@@ -5,20 +5,20 @@ package controllers;
  */
 
 public class LogicMessage {
-    private int moveFrom,moveTo, nextMove;
+    private int pawnToMove,moveTo, nextMove;
     private boolean blacksTurn;
     // MessageCodes
     public static final int PLACE_PAWN =1;
     public static final int REMOVE_PAWN=3;
     public static final int CHOOSE_PAWN=5;
     public static final int MOVE_PAWN=7;
-    public static final int RESET_ALL=2;
     public static final int GAME_OVER=4;
     // ToFrom statements (0--23 {r platser p} br{det)
     public static final int FROM_WHITE_STASH = -2;
     public static final int FROM_BLACK_STASH = -3;
     public static final int TO_DISCARD_PILE = -4;
     public static final int HIGHLIGHT = -5;
+    public static final int TO_STASH = -1;
 
     void setNextMove(int code) {
         nextMove =code;
@@ -36,22 +36,22 @@ public class LogicMessage {
         return blacksTurn;
     }
 
-    public int  getMoveFrom() {
-        return moveFrom;
+    public int getPawnToMove() {
+        return pawnToMove;
     }
 
-    public int  getMoveTo() {
+    public int getMoveTo() {
         return moveTo;
     }
 
-    public LogicMessage(int moveFrom, int moveTo) {
-        this.moveFrom = moveFrom;
+    public LogicMessage(int pawnToMove, int moveTo) {
+        this.pawnToMove = pawnToMove;
         this.moveTo = moveTo;
     }
 
-    LogicMessage(int moveFrom, int moveTo, int nextMove, boolean blacksTurn) {
+    LogicMessage(int pawnToMove, int moveTo, int nextMove, boolean blacksTurn) {
         this.nextMove = nextMove;
-        this.moveFrom = moveFrom;
+        this.pawnToMove = pawnToMove;
         this.moveTo = moveTo;
         this.blacksTurn = blacksTurn;
     }

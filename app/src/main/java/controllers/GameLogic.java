@@ -1,6 +1,7 @@
 package controllers;
 
 import models.NineMenMorrisModel;
+import models.Pawn;
 import models.Point;
 
 /**
@@ -12,11 +13,11 @@ public class GameLogic {
     private Gamestate state;
     private Gamestate previousGameState; // beh|vs n{r en kvarn avbryter normalt spel.
     private NineMenMorrisModel model;
-    private boolean blacksTurn;
+    private Pawn pawnToMove;
+    private boolean isBlacksTurn;
     private boolean blackFlying;
     private boolean whiteFlying;
     private int gameCounter;
-    private int placeToMoveFrom;
 
     public GameLogic() {
         model = new NineMenMorrisModel();
@@ -31,8 +32,8 @@ public class GameLogic {
         model = new NineMenMorrisModel();
         state = Gamestate.PLACING_PAWNS;
         gameCounter = 0;
-        blacksTurn = false;
-        return new LogicMessage(LogicMessage.RESET_ALL, LogicMessage.RESET_ALL, LogicMessage.PLACE_PAWN, blacksTurn);
+        isBlacksTurn = false;
+        return new LogicMessage(model.getPawns().length, LogicMessage.TO_STASH, LogicMessage.PLACE_PAWN, isBlacksTurn);
     }
 
     //ALL spellogik
@@ -45,97 +46,115 @@ public class GameLogic {
                 if (!model.getPoint(p).isEmpty()) throw new GameLogicException("Occupied place.");
                 else {
                     gameCounter++;
-                    if (blacksTurn) {
-                        returnMessage = new LogicMessage(LogicMessage.FROM_BLACK_STASH, p);
+                    returnMessage = new LogicMessage(findNextStashedPawn(isBlacksTurn),p);
+                    model.getPawn(findNextStashedPawn(isBlacksTurn)).setPosition(p);
+                    if (isBlacksTurn) {
                         model.getPoint(p).setStatus(Point.Status.BLACK);
                     } else {
-                        returnMessage = new LogicMessage(LogicMessage.FROM_WHITE_STASH, p);
                         model.getPoint(p).setStatus(Point.Status.WHITE);
                     }
-                    blacksTurn = !blacksTurn;
+                    isBlacksTurn = !isBlacksTurn;
                     if (gameCounter < 18) returnMessage.setNextMove(LogicMessage.PLACE_PAWN);
                     else {
                         state = Gamestate.CHOOSING_PAWN;
                         returnMessage.setNextMove(LogicMessage.CHOOSE_PAWN);
                     }
                     if (isMill(p)) {
-                        blacksTurn = !blacksTurn;
+                        isBlacksTurn = !isBlacksTurn;
                         previousGameState = state;
                         state = Gamestate.PAWN_REMOVAL;
                         returnMessage.setNextMove(LogicMessage.REMOVE_PAWN);
                     }
-                    returnMessage.setBlacksTurn(blacksTurn);
+                    returnMessage.setBlacksTurn(isBlacksTurn);
                 }
             }
             break;
             case CHOOSING_PAWN: {
-                if ((blacksTurn && model.getPoint(p).getStatus() != Point.Status.BLACK) ||
-                        (!blacksTurn && model.getPoint(p).getStatus() != Point.Status.WHITE))
+                if ((isBlacksTurn && model.getPoint(p).getStatus() != Point.Status.BLACK) ||
+                        (!isBlacksTurn && model.getPoint(p).getStatus() != Point.Status.WHITE))
                     throw new GameLogicException("Illegal pawn to select.");
-                if (((blacksTurn && !blackFlying) || (!blacksTurn && whiteFlying))
-                        && blockedPawn(p)) throw new GameLogicException("Pawn is blocked.");
-                placeToMoveFrom = p;
-                returnMessage = new LogicMessage(LogicMessage.HIGHLIGHT, p, LogicMessage.MOVE_PAWN, blacksTurn);
+                if (blockedPawn(p)) throw new GameLogicException("Pawn is blocked");
+                pawnToMove = model.getPawnAtPosition(p);
+                returnMessage = new LogicMessage(model.getPawnIndexAtPosition(p), LogicMessage.HIGHLIGHT, LogicMessage.MOVE_PAWN, isBlacksTurn);
                 state = Gamestate.MOVING_PAWNS;
             }
             break;
             case MOVING_PAWNS: {
                 if (!model.getPoint(p).isEmpty()) throw new GameLogicException("Occupied space");
-                if (!legalMove(placeToMoveFrom, p)) throw new GameLogicException("Illegal move.");
-                returnMessage = new LogicMessage(placeToMoveFrom, p);
-                model.getPoint(p).setStatus(model.getPoint(placeToMoveFrom).getStatus());
-                model.getPoint(placeToMoveFrom).setStatus(Point.Status.EMPTY);
-                blacksTurn = !blacksTurn;
+                if (!legalMove(pawnToMove.getPosition(), p)) throw new GameLogicException("Illegal move.");
+                returnMessage = new LogicMessage(model.getPawnIndex(pawnToMove), p);
+                model.getPoint(p).setStatus(model.getPoint(pawnToMove.getPosition()).getStatus());
+                model.getPoint(pawnToMove.getPosition()).setStatus(Point.Status.EMPTY);
+                pawnToMove.setPosition(p);
+                isBlacksTurn = !isBlacksTurn;
                 state = Gamestate.CHOOSING_PAWN;
                 returnMessage.setNextMove(LogicMessage.CHOOSE_PAWN);
                 if (isMill(p)) {
-                    blacksTurn=!blacksTurn;
+                    isBlacksTurn =!isBlacksTurn;
                     previousGameState = state;
                     state = Gamestate.PAWN_REMOVAL;
                     returnMessage.setNextMove(LogicMessage.REMOVE_PAWN);
                 }
-                returnMessage.setBlacksTurn(blacksTurn);
+                returnMessage.setBlacksTurn(isBlacksTurn);
             }
             break;
             case PAWN_REMOVAL: {
                 if (model.getPoint(p).isEmpty()) throw new GameLogicException("Choose a pawn.");
-                if ((blacksTurn && model.getPoint(p).getStatus() == Point.Status.BLACK)
-                        || !blacksTurn && model.getPoint(p).getStatus() == Point.Status.WHITE)
+                if ((isBlacksTurn && model.getPoint(p).getStatus() == Point.Status.BLACK)
+                        || !isBlacksTurn && model.getPoint(p).getStatus() == Point.Status.WHITE)
                     throw new GameLogicException("Choose a pawns of opponent's colour.");
-                if (isMill(p) && !allOpponentsPawnsAreMill(blacksTurn))
+                if (isMill(p) && !allOpponentsPawnsAreMill(isBlacksTurn))
                     throw new GameLogicException("Cannot choose a milled pawn to remove when there are unmilled pawns.");
-                returnMessage = new LogicMessage(p, LogicMessage.TO_DISCARD_PILE);
+                returnMessage = new LogicMessage(model.getPawnIndexAtPosition(p), LogicMessage.TO_DISCARD_PILE);
                 model.getPoint(p).setStatus(Point.Status.EMPTY);
-                blacksTurn = !blacksTurn;
+                model.getPawnAtPosition(p).setPosition(LogicMessage.TO_DISCARD_PILE);
+                isBlacksTurn = !isBlacksTurn;
                 state = previousGameState;
                 if (state == Gamestate.PLACING_PAWNS)
                     returnMessage.setNextMove(LogicMessage.PLACE_PAWN);
                 if (state == Gamestate.CHOOSING_PAWN)
                     returnMessage.setNextMove(LogicMessage.CHOOSE_PAWN);
-                returnMessage.setBlacksTurn(blacksTurn);
-                if (blacksTurn && numberOfPawnsLeft(blacksTurn)<4) blackFlying=true;
-                if (!blacksTurn && numberOfPawnsLeft(blacksTurn)<4) whiteFlying=true;
-/*                if (numberOfPawnsLeft(true)<3 || numberOfPawnsLeft(false)<3)
-                    returnMessage = new LogicMessage(0,0,LogicMessage.GAME_OVER,blacksTurn);*/
+                returnMessage.setBlacksTurn(isBlacksTurn);
+                if (numberOfPawnsLeft(isBlacksTurn)<4) {
+                    if (isBlacksTurn) blackFlying=true;
+                    else whiteFlying = true;
+                }
+                if (numberOfPawnsLeft(isBlacksTurn)<3) {
+                    returnMessage.setNextMove(LogicMessage.GAME_OVER);
+                    returnMessage.setBlacksTurn(!isBlacksTurn);
+                    state=Gamestate.IDLE;
+                }
             }
         }
         return returnMessage;
     }
 
+    private int findNextStashedPawn(boolean blacksTurn) {
+        int startValue= blacksTurn ? 17 : 8;
+        for (int i = startValue; i>=startValue-8; i--) {
+            System.out.println("Position of pawn "+i+"="+model.getPawn(i).getPosition());
+            if (model.getPawn(i).getPosition() == LogicMessage.TO_STASH) return i;
+
+        }
+        return -1;
+    }
+
     private int numberOfPawnsLeft(boolean blacksTurn) {
-        Point.Status player;
-        if (blacksTurn) player = Point.Status.BLACK;
-        else player = Point.Status.WHITE;
-
-
-        int noOfPawns=0;
-        for (Point p : model.getPoints()) if (p.getStatus()==player) noOfPawns++;
-        return noOfPawns;
+        int startValue= blacksTurn ? 9 : 0;
+        int pawnsLeft=0;
+        for (int i = startValue; i<startValue+9; i++)
+        if (model.getPawn(i).getPosition() != LogicMessage.TO_DISCARD_PILE) pawnsLeft++;
+        System.out.println(blacksTurn+" har "+pawnsLeft+" pjäser kvar.");
+        return pawnsLeft;
     }
 
     private boolean blockedPawn(int pos) {
+        if ((blackFlying && isBlacksTurn) || (!isBlacksTurn && whiteFlying)) return false;
         switch (pos) {
-            case 0:return noneAreEmpty(3, 21);
+            case 0:{
+                System.out.println(model.getPoint(3).getStatus().toString()+","+model.getPoint(21).getStatus().toString());
+                return noneAreEmpty(3, 21);
+            }
             case 1:return noneAreEmpty(4, 22);
             case 2:return noneAreEmpty(23, 5);
             case 3:return noneAreEmpty(0, 6, 4);
@@ -180,7 +199,7 @@ public class GameLogic {
     }
 
     private boolean legalMove(int from, int to) {
-        if ((blacksTurn && blackFlying) || (!blacksTurn && whiteFlying)) return true;
+        if ((isBlacksTurn && blackFlying) || (!isBlacksTurn && whiteFlying)) return true;
         switch (to) {
             case 0:return (from == 3 || from == 21);
             case 1:return (from == 4 || from == 22);
