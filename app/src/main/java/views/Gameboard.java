@@ -30,7 +30,7 @@ public class Gameboard extends View {
     // och sen divideras med 1000. Gl|m inte!
     private static final int POINT_POSITION_TO_PIXEL = 125;
     private static final int CIRCLE_RADIUS = 20;
-    private static final int CLICK_RADIUS= 60;
+    private static final int CLICK_RADIUS = 60;
     private static final int Y_OFFSET_FOR_IMAGEVIEW = 357;
     private ImageView[] pawnImages;
     private static Drawable background;
@@ -49,31 +49,31 @@ public class Gameboard extends View {
     private void drawNineMenMorrisBoard(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
-        background.setBounds(0,0,getWidth(),getHeight());
+        background.setBounds(0, 0, getWidth(), getHeight());
         background.draw(canvas);
         // Draw the outline
-        float[] outline = {0,0,getWidth(),0,
-                           getWidth(),0,getWidth(),getHeight(),
-                           getWidth(),getHeight(),0,getHeight(),
-                           0,getHeight(),0,0};
+        float[] outline = {0, 0, getWidth(), 0,
+                getWidth(), 0, getWidth(), getHeight(),
+                getWidth(), getHeight(), 0, getHeight(),
+                0, getHeight(), 0, 0};
         paint.setStrokeWidth(16);
-        canvas.drawLines(outline,paint);
+        canvas.drawLines(outline, paint);
         paint.setStrokeWidth(4);
         for (int j = 0; j < 3; j++) {
-            for (int i=0; i<24; i+=6) {
-                canvas.drawLine(abspos(model.getPoint(i+j).getX()),
-                                abspos(model.getPoint(i+j).getY()),
-                                abspos(model.getPoint((i+j+6)%24).getX()),
-                                abspos(model.getPoint((i+j+6)%24).getY()),
-                                paint);
+            for (int i = 0; i < 24; i += 6) {
+                canvas.drawLine(abspos(model.getPoint(i + j).getX()),
+                        abspos(model.getPoint(i + j).getY()),
+                        abspos(model.getPoint((i + j + 6) % 24).getX()),
+                        abspos(model.getPoint((i + j + 6) % 24).getY()),
+                        paint);
             }
         }
-        for (int j=3; j<24; j+=6) {
+        for (int j = 3; j < 24; j += 6) {
             canvas.drawLine(abspos(model.getPoint(j).getX()),
-                            abspos(model.getPoint(j).getY()),
-                            abspos(model.getPoint(j+2).getX()),
-                            abspos(model.getPoint(j+2).getY()),
-                            paint);
+                    abspos(model.getPoint(j).getY()),
+                    abspos(model.getPoint(j + 2).getX()),
+                    abspos(model.getPoint(j + 2).getY()),
+                    paint);
         }
         float radius = Math.min(getWidth(), getHeight()) * CIRCLE_RADIUS / 1000;
         for (Point p : model.getPoints()) {
@@ -107,55 +107,57 @@ public class Gameboard extends View {
     }
 
     public int validateClick(int x, int y) {
-        Point finger = new Point (x,y);
-        int CLICKRADIE = Math.min(getWidth(),getHeight())*CLICK_RADIUS/1000;
+        Point finger = new Point(x, y);
+        int CLICKRADIE = Math.min(getWidth(), getHeight()) * CLICK_RADIUS / 1000;
         for (Point p : model.getPoints()) {
-            if (finger.distanceTo(abspos(p.getX()),abspos(p.getY())) < CLICKRADIE) {
+            if (finger.distanceTo(abspos(p.getX()), abspos(p.getY())) < CLICKRADIE) {
                 return model.getPointIndex(p);
             }
         }
         return -1;
     }
-    public void animateMovement(ImageView obj, float x, float y,boolean portrait) {
-        if (portrait) y+=offset;
-        else x+=offset;
-        ObjectAnimator xA = ObjectAnimator.ofFloat(obj,"x",x-obj.getWidth()/2);
-        ObjectAnimator yA = ObjectAnimator.ofFloat(obj,"y",y-obj.getWidth()/2);
+
+    public void animateMovement(ImageView obj, float x, float y, boolean portrait) {
+        if (portrait) y += offset;
+        else x += offset;
+        ObjectAnimator xA = ObjectAnimator.ofFloat(obj, "x", x - obj.getWidth() / 2);
+        ObjectAnimator yA = ObjectAnimator.ofFloat(obj, "y", y - obj.getWidth() / 2);
         AnimatorSet anime = new AnimatorSet();
-        anime.playTogether(xA,yA);
+        anime.playTogether(xA, yA);
         anime.setInterpolator(new AnticipateOvershootInterpolator());
         anime.setDuration(1000);
         anime.start();
     }
 
-    public boolean move(int pawnToMove, int toPosition,boolean portrait) {
-        if (pawnToMove==model.getPawns().length) {
-            if (toPosition<0) {
-                int gameboardWidth = Math.min(getWidth(), getHeight());
-                for (int i = 0; i < pawnImages.length; i++) {
+    public boolean move(int pawnToMove, int toPosition, boolean portrait) {
+        if (pawnToMove == model.getPawns().length) {
+            int gameboardWidth = Math.min(getWidth(), getHeight());
+            for (int i = 0; i < pawnImages.length; i++) {
+                if (toPosition < LogicMessage.TO_STASH) {
                     animateMovement(pawnImages[i], gameboardWidth * 0.05f + (i % 9) * (int) (gameboardWidth * 0.09),
-                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09),portrait);
+                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09), portrait);
+                } else if (toPosition==LogicMessage.TO_DISCARD_PILE) {
+                    animateMovement(pawnImages[pawnToMove], -100, -100, portrait);
                 }
-            }
-            else for (int i=0; i<pawnImages.length; i++) {
-                Point p = model.getPoint(model.getPawn(i).getPosition());
-                animateMovement(pawnImages[pawnToMove], abspos(p.getX()), abspos(p.getY()),portrait);
+                else {
+                    Point p = model.getPoint(model.getPawn(i).getPosition());
+                    animateMovement(pawnImages[pawnToMove], abspos(p.getX()), abspos(p.getY()), portrait);
+                }
             }
             return true;
         }
-        if (toPosition==LogicMessage.HIGHLIGHT) return true;
-        if (pawnToMove==-1) return false;
+        if (pawnToMove == -1) return false;
+        if (toPosition == LogicMessage.HIGHLIGHT) return true;
         if (toPosition == LogicMessage.TO_DISCARD_PILE) {
-            animateMovement(pawnImages[pawnToMove],-100,-100,portrait);
-        }
-        else {
-            animateMovement(pawnImages[pawnToMove], abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()),portrait);
+            animateMovement(pawnImages[pawnToMove], -100, -100, portrait);
+        } else {
+            animateMovement(pawnImages[pawnToMove], abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()), portrait);
         }
         return true;
     }
 
     public void setPawns(ImageView[] pawns) {
-        this.pawnImages=pawns;
+        this.pawnImages = pawns;
     }
 
     public void setModel(NineMenMorrisModel model) {

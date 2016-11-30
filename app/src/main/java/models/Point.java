@@ -1,10 +1,12 @@
 package models;
 
+import java.io.Serializable;
+
 /**
  * Created by simonlundstrom on 25/11/16.
  */
 
-public class Point{
+public class Point implements Serializable{
     private int x,y;
 
     public Status status;

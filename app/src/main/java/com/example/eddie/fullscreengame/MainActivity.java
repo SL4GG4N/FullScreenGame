@@ -1,6 +1,7 @@
 package com.example.eddie.fullscreengame;
 
 import android.content.res.Configuration;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 import controllers.GameLogic;
 import controllers.GameLogicException;
 import controllers.LogicMessage;
+import models.Pawn;
+import models.Point;
 import views.Gameboard;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,14 +28,20 @@ public class MainActivity extends AppCompatActivity {
     boolean portrait;
 
     @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putSerializable("pawns",logik.getModel().getPawns());
+        outState.putSerializable("points",logik.getModel().getPoints());
+        outState.putSerializable("state",logik.getState());
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        logik = new GameLogic();
         portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-
         // Omforma br{det till en fyrkant och sätt dit lyssnare.
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -42,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
         spelbrade.invalidate();
+        spelbrade.setAnimationOffset(offset);
         spelbrade.setOnTouchListener(new GameboardTouchListener());
 
         // Initialisera textf{ltet.
@@ -61,10 +71,18 @@ public class MainActivity extends AppCompatActivity {
             if (i > 0) addContentView(pawnImages[i], pawnImages[i].getLayoutParams());
         }
         spelbrade.setPawns(pawnImages);
+        // Kolla om spelet just laddats om fr}n att ha v{nt p} sig.
+        if (savedInstanceState!=null && savedInstanceState.getSerializable("paws")!=null) {
+            toastText("Reloading game.");
+            logik = new GameLogic((Pawn[])savedInstanceState.getSerializable("pawns"),
+                    (Point[])savedInstanceState.getSerializable("points"),
+                    (GameLogic.Gamestate)savedInstanceState.getSerializable("state"));
+        }
+        else
+            logik=new GameLogic();
         spelbrade.setModel(logik.getModel());
-        spelbrade.move(pawnImages.length,-1,portrait);
-        spelbrade.setAnimationOffset(offset);
-        obeyLogic(logik.startNewGame());
+        spelbrade.move(pawnImages.length,0,portrait);
+//        obeyLogic(logik.startNewGame());
     }
 
     // Tar emot svaren

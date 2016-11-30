@@ -24,8 +24,17 @@ public class GameLogic {
         state = Gamestate.IDLE;
     }
 
+    public GameLogic(Pawn[] pawns, Point[] points,Gamestate state) {
+        model = new NineMenMorrisModel(pawns,points);
+        this.state = state;
+    }
+
     public NineMenMorrisModel getModel() {
         return model;
+    }
+
+    public Gamestate getState() {
+        return state;
     }
 
     public LogicMessage startNewGame() {
@@ -294,7 +303,7 @@ public class GameLogic {
         return false;
     }
 
-    private enum Gamestate {
+    public enum Gamestate {
         IDLE, PLACING_PAWNS, PAWN_REMOVAL, CHOOSING_PAWN, MOVING_PAWNS;
     }
 }

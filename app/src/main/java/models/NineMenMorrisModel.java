@@ -81,4 +81,9 @@ public class NineMenMorrisModel {
         for (int i = 0; i<pawns.length; i++)
             pawns[i] = new Pawn();
     }
-}
+    public NineMenMorrisModel(Pawn[] pawns,Point[] points){
+        super();
+        this.pawns = pawns;
+        this.points = points;
+    }
+ }

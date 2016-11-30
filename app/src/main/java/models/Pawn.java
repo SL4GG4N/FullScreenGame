@@ -1,10 +1,12 @@
 package models;
 
+import java.io.Serializable;
+
 /**
  * Created by simonlundstrom on 29/11/16.
  */
 
-public class Pawn {
+public class Pawn implements Serializable {
     int position;
 
     public Pawn() {
