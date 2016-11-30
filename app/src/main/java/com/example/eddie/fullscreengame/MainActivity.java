@@ -4,8 +4,11 @@ import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -60,11 +63,33 @@ public class MainActivity extends AppCompatActivity {
             pawnImages[i].setAdjustViewBounds(true);
             if (i > 0) addContentView(pawnImages[i], pawnImages[i].getLayoutParams());
         }
+
+        Button newGame;
+        if(portrait) newGame = (Button) findViewById(R.id.menuP);
+        else newGame = (Button) findViewById(R.id.menuL);
+        newGame.setOnClickListener(new ClickNewGameListener());
+        registerForContextMenu(newGame);
+
         spelbrade.setPawns(pawnImages);
         spelbrade.setModel(logik.getModel());
         spelbrade.move(pawnImages.length,-1,portrait);
         spelbrade.setAnimationOffset(offset);
         obeyLogic(logik.startNewGame());
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Menu");
+        menu.add(0, v.getId(), 0, "new game");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getTitle() == "new game"){
+            obeyLogic(logik.startNewGame());
+        }else return false;
+        return true;
     }
 
     // Tar emot svaren
@@ -133,6 +158,14 @@ public class MainActivity extends AppCompatActivity {
     }
      */
 
+    private class ClickNewGameListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View view) {
+            openContextMenu(view);
+            //obeyLogic(logik.startNewGame());
+        }
+    }
     // Om n}gon klickar p} spelbr{det, valideras det av spelbr{det,
     // och om detta returnerar noll eller |ver, skickas det in i spellogiken.
     // Kanske skulle man skicka in det i spellogiken direkt, men jag vet inte.
