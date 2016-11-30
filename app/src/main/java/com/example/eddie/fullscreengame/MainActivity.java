@@ -46,16 +46,16 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-
         // Omforma br{det till en fyrkant och sätt dit lyssnare.
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
+        int offset = (Math.max(displaymetrics.heightPixels,displaymetrics.widthPixels)-size)/2;
         spelbrade = (Gameboard) findViewById(R.id.Gameboard);
-        spelbrade.setPar(this);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
         spelbrade.invalidate();
+        spelbrade.setAnimateGraphicsOffset(portrait,offset);
         spelbrade.setOnTouchListener(new GameboardTouchListener());
         // Initialisera textf{ltet.
         infoPanel = (TextView) findViewById(R.id.infoPane);
@@ -97,6 +97,11 @@ public class MainActivity extends AppCompatActivity {
         }
         // S{tt logiken och flytta pj{serna dit de ska.
         spelbrade.setModel(logik.getModel());
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
         spelbrade.move(pawnImages.length, 0);
     }
 

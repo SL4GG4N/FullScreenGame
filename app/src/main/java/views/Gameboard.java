@@ -38,7 +38,7 @@ public class Gameboard extends View {
     private ImageView[] pawnImages;
     private static Drawable background;
     private static int offset;
-    private Activity par;
+    private static boolean parentPortrait;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -86,9 +86,7 @@ public class Gameboard extends View {
     }
 
     private int abspos(int relpos) {
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        par.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
+        int size = Math.min(getWidth(),getHeight());
         return size * relpos * POINT_POSITION_TO_PIXEL / 1000;
     }
 
@@ -124,14 +122,8 @@ public class Gameboard extends View {
     }
 
     public void animateMovement(ImageView obj, float x, float y) {
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        par.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int shortside= Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
-        int offset = (Math.max(displaymetrics.heightPixels, displaymetrics.widthPixels) - shortside) / 2;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            y+=offset;
-        else
-            x += offset;
+        if (parentPortrait) y += offset;
+        else x += offset;
         System.out.println("Moving something to "+x+";"+y+")");
         ObjectAnimator xA = ObjectAnimator.ofFloat(obj, "x", x - obj.getWidth() / 2);
         ObjectAnimator yA = ObjectAnimator.ofFloat(obj, "y", y - obj.getWidth() / 2);
@@ -145,11 +137,7 @@ public class Gameboard extends View {
     public boolean move(int pawnToMove, int toPosition) {
         if (pawnToMove == model.getPawns().length) {
 
-            // M}ste r{kna ut dessa detaljer h}r, f|r att Android tycker "because fuck you".
-
-            DisplayMetrics displaymetrics = new DisplayMetrics();
-            par.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-            int gameboardWidth = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
+            int gameboardWidth = Math.min(getHeight(),getWidth());
 
 //            System.out.println("Gameboard moving all!"+gameboardWidth+")");
             for (int i = 0; i < pawnImages.length; i++) {
@@ -182,8 +170,10 @@ public class Gameboard extends View {
         }
         return true;
     }
-    public void setPar(Activity context) {
-        par = context;
+
+    public static void setAnimateGraphicsOffset(boolean parentPortrait, int offset) {
+        Gameboard.parentPortrait = parentPortrait;
+        Gameboard.offset = offset;
     }
 
     public void setPawns(ImageView[] pawns) {
