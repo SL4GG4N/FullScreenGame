@@ -142,8 +142,13 @@ public class Gameboard extends View {
             for (int i = 0; i < pawnImages.length; i++) {
                 int oldPosition = model.getPawn(i).getPosition();
                 if (oldPosition == LogicMessage.TO_STASH) {
-                    animateMovement(pawnImages[i], gameboardWidth * 0.05f + (i % 9) * (int) (gameboardWidth * 0.09),
-                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09));
+                    if (parentPortrait) {
+                        animateMovement(pawnImages[i], gameboardWidth * 0.05f + (i % 9) * (int) (gameboardWidth * 0.09),
+                                (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09));
+                    }else {
+                        animateMovement(pawnImages[i], (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09),
+                                gameboardWidth*0.95f - (i % 9) * (int) (gameboardWidth * 0.09));
+                    }
                 } else if (oldPosition==LogicMessage.TO_DISCARD_PILE) {
                     animateMovement(pawnImages[i], -100, -100);
                 }
