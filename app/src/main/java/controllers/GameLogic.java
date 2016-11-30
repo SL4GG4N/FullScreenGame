@@ -1,5 +1,8 @@
 package controllers;
 
+import java.io.Serializable;
+import java.security.SecureRandom;
+
 import models.NineMenMorrisModel;
 import models.Pawn;
 import models.Point;
@@ -24,13 +27,19 @@ public class GameLogic {
         state = Gamestate.IDLE;
     }
 
-    public GameLogic(Pawn[] pawns, Point[] points,Gamestate state) {
+    public GameLogic(Pawn[] pawns, Point[] points,Gamestate state, boolean black) {
+        System.out.println("GameLogic creates new state base off stuff: "+state.toString());
         model = new NineMenMorrisModel(pawns,points);
         this.state = state;
+        this.isBlacksTurn=black;
     }
 
     public NineMenMorrisModel getModel() {
         return model;
+    }
+
+    public boolean isBlacksTurn() {
+        return isBlacksTurn;
     }
 
     public Gamestate getState() {
@@ -38,7 +47,7 @@ public class GameLogic {
     }
 
     public LogicMessage startNewGame() {
-        model = new NineMenMorrisModel();
+        model.reset();
         state = Gamestate.PLACING_PAWNS;
         gameCounter = 0;
         isBlacksTurn = false;
@@ -303,7 +312,7 @@ public class GameLogic {
         return false;
     }
 
-    public enum Gamestate {
+    public enum Gamestate implements Serializable{
         IDLE, PLACING_PAWNS, PAWN_REMOVAL, CHOOSING_PAWN, MOVING_PAWNS;
     }
 }

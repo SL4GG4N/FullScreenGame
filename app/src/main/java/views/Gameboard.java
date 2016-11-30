@@ -2,12 +2,15 @@ package views;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
@@ -35,10 +38,10 @@ public class Gameboard extends View {
     private ImageView[] pawnImages;
     private static Drawable background;
     private static int offset;
+    private Activity par;
 
     @Override
     protected void onDraw(Canvas canvas) {
-        System.out.println("Gameboard drawing!");
         p.setColor(Color.GRAY);
         canvas.drawPaint(p);
         drawNineMenMorrisBoard(canvas);
@@ -83,7 +86,10 @@ public class Gameboard extends View {
     }
 
     private int abspos(int relpos) {
-        return Math.min(getWidth(), getHeight()) * relpos * POINT_POSITION_TO_PIXEL / 1000;
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        par.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
+        return size * relpos * POINT_POSITION_TO_PIXEL / 1000;
     }
 
     public Gameboard(Context context, AttributeSet attrs) {
@@ -117,9 +123,16 @@ public class Gameboard extends View {
         return -1;
     }
 
-    public void animateMovement(ImageView obj, float x, float y, boolean portrait) {
-        if (portrait) y += offset;
-        else x += offset;
+    public void animateMovement(ImageView obj, float x, float y) {
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        par.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int shortside= Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
+        int offset = (Math.max(displaymetrics.heightPixels, displaymetrics.widthPixels) - shortside) / 2;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            y+=offset;
+        else
+            x += offset;
+        System.out.println("Moving something to "+x+";"+y+")");
         ObjectAnimator xA = ObjectAnimator.ofFloat(obj, "x", x - obj.getWidth() / 2);
         ObjectAnimator yA = ObjectAnimator.ofFloat(obj, "y", y - obj.getWidth() / 2);
         AnimatorSet anime = new AnimatorSet();
@@ -129,19 +142,31 @@ public class Gameboard extends View {
         anime.start();
     }
 
-    public boolean move(int pawnToMove, int toPosition, boolean portrait) {
+    public boolean move(int pawnToMove, int toPosition) {
         if (pawnToMove == model.getPawns().length) {
-            int gameboardWidth = Math.min(getWidth(), getHeight());
+
+            // M}ste r{kna ut dessa detaljer h}r, f|r att Android tycker "because fuck you".
+
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            par.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            int gameboardWidth = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
+
+//            System.out.println("Gameboard moving all!"+gameboardWidth+")");
             for (int i = 0; i < pawnImages.length; i++) {
-                if (toPosition < LogicMessage.TO_STASH) {
+                int oldPosition = model.getPawn(i).getPosition();
+//                System.out.println("Gameboard moving pawn "+i+" to "+oldPosition);
+                if (oldPosition == LogicMessage.TO_STASH) {
+//                    System.out.println("Moving pawn "+i+" to stash!");
                     animateMovement(pawnImages[i], gameboardWidth * 0.05f + (i % 9) * (int) (gameboardWidth * 0.09),
-                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09), portrait);
-                } else if (toPosition==LogicMessage.TO_DISCARD_PILE) {
-                    animateMovement(pawnImages[pawnToMove], -100, -100, portrait);
+                            (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09));
+                } else if (oldPosition==LogicMessage.TO_DISCARD_PILE) {
+//                    System.out.println("Moving pawn "+i+" to hell!");
+                    animateMovement(pawnImages[i], -100, -100);
                 }
                 else {
                     Point p = model.getPoint(model.getPawn(i).getPosition());
-                    animateMovement(pawnImages[pawnToMove], abspos(p.getX()), abspos(p.getY()), portrait);
+//                    System.out.println("Moving pawn "+i+" to "+p);
+                    animateMovement(pawnImages[i], abspos(p.getX()), abspos(p.getY()));
                 }
             }
             return true;
@@ -149,11 +174,16 @@ public class Gameboard extends View {
         if (pawnToMove == -1) return false;
         if (toPosition == LogicMessage.HIGHLIGHT) return true;
         if (toPosition == LogicMessage.TO_DISCARD_PILE) {
-            animateMovement(pawnImages[pawnToMove], -100, -100, portrait);
+            animateMovement(pawnImages[pawnToMove], -100, -100);
         } else {
-            animateMovement(pawnImages[pawnToMove], abspos(model.getPoint(toPosition).getX()), abspos(model.getPoint(toPosition).getY()), portrait);
+            animateMovement(pawnImages[pawnToMove],
+                            abspos(model.getPoint(toPosition).getX()),
+                            abspos(model.getPoint(toPosition).getY()));
         }
         return true;
+    }
+    public void setPar(Activity context) {
+        par = context;
     }
 
     public void setPawns(ImageView[] pawns) {
@@ -162,9 +192,5 @@ public class Gameboard extends View {
 
     public void setModel(NineMenMorrisModel model) {
         this.model = model;
-    }
-
-    public void setAnimationOffset(int offset) {
-        this.offset = offset;
     }
 }

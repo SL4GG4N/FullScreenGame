@@ -1,7 +1,6 @@
 package com.example.eddie.fullscreengame;
 
 import android.content.res.Configuration;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -31,11 +30,13 @@ public class MainActivity extends AppCompatActivity {
     boolean portrait;
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        outState.putSerializable("pawns",logik.getModel().getPawns());
-        outState.putSerializable("points",logik.getModel().getPoints());
-        outState.putSerializable("state",logik.getState());
-        super.onSaveInstanceState(outState, outPersistentState);
+    public void onSaveInstanceState(Bundle outState) {
+        System.out.println("Saving stuff");
+        outState.putSerializable("pawns", logik.getModel().getPawns());
+        outState.putSerializable("points", logik.getModel().getPoints());
+        outState.putSerializable("state", logik.getState());
+        outState.putBoolean("blacksturn",logik.isBlacksTurn());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -45,22 +46,21 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+
         // Omforma br{det till en fyrkant och sätt dit lyssnare.
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int size = Math.min(displaymetrics.heightPixels, displaymetrics.widthPixels);
-        int offset = (Math.max(displaymetrics.heightPixels, displaymetrics.widthPixels) - size) / 2;
         spelbrade = (Gameboard) findViewById(R.id.Gameboard);
+        spelbrade.setPar(this);
         spelbrade.getLayoutParams().height = size;
         spelbrade.getLayoutParams().width = size;
         spelbrade.invalidate();
-        spelbrade.setAnimationOffset(offset);
         spelbrade.setOnTouchListener(new GameboardTouchListener());
-
         // Initialisera textf{ltet.
         infoPanel = (TextView) findViewById(R.id.infoPane);
 
-        // Alla pj{ser.
+        // Alla pj{ser, och s{tt dem i spelbr{det.
         pawnImages = new ImageView[18];
         pawnImages[0] = (ImageView) findViewById(R.id.pawn);
         for (int i = 0; i < 18; i++) {
@@ -68,35 +68,41 @@ public class MainActivity extends AppCompatActivity {
             if (i < 9) pawnImages[i].setImageResource(R.drawable.white_pawn);
             else pawnImages[i].setImageResource(R.drawable.black_pawn);
             pawnImages[i].setLayoutParams(pawnImages[0].getLayoutParams());
-            pawnImages[i].setMaxHeight((int)(size*0.09));
-            pawnImages[i].setMaxWidth((int)(size*0.09));
+            pawnImages[i].setMaxHeight((int) (size * 0.09));
+            pawnImages[i].setMaxWidth((int) (size * 0.09));
             pawnImages[i].setAdjustViewBounds(true);
             if (i > 0) addContentView(pawnImages[i], pawnImages[i].getLayoutParams());
         }
+        spelbrade.setPawns(pawnImages);
 
+        // Knapp f|r nytt spel, eftersom vi inte har n}gon OptionsMenu.
         Button newGame;
-        if(portrait) newGame = (Button) findViewById(R.id.menuP);
+        if (portrait) newGame = (Button) findViewById(R.id.menuP);
         else newGame = (Button) findViewById(R.id.menuL);
         newGame.setOnClickListener(new ClickNewGameListener());
         registerForContextMenu(newGame);
 
-        spelbrade.setPawns(pawnImages);
         // Kolla om spelet just laddats om fr}n att ha v{nt p} sig.
-        if (savedInstanceState!=null && savedInstanceState.getSerializable("paws")!=null) {
+        if (savedInstanceState!=null) System.out.println("Pawns are " + savedInstanceState.getSerializable("pawns"));
+        if (savedInstanceState != null && savedInstanceState.getSerializable("pawns") != null) {
             toastText("Reloading game.");
             logik = new GameLogic((Pawn[])savedInstanceState.getSerializable("pawns"),
-                    (Point[])savedInstanceState.getSerializable("points"),
-                    (GameLogic.Gamestate)savedInstanceState.getSerializable("state"));
+                    (Point[]) savedInstanceState.getSerializable("points"),
+                    (GameLogic.Gamestate) savedInstanceState.getSerializable("state"),
+                    savedInstanceState.getBoolean("blacksturn"));
+
+        } else {
+            logik = new GameLogic();
+            System.out.println("creating new Logic from scratch.");
         }
-        else
-            logik=new GameLogic();
+        // S{tt logiken och flytta pj{serna dit de ska.
         spelbrade.setModel(logik.getModel());
-        spelbrade.move(pawnImages.length,0,portrait);
-//        obeyLogic(logik.startNewGame());
+        spelbrade.move(pawnImages.length, 0);
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
+            menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.setHeaderTitle("Menu");
         menu.add(0, v.getId(), 0, "new game");
@@ -104,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getTitle() == "new game"){
+        if (item.getTitle() == "new game") {
             obeyLogic(logik.startNewGame());
-        }else return false;
+        } else return false;
         return true;
     }
 
@@ -142,48 +148,19 @@ public class MainActivity extends AppCompatActivity {
                 string.append("UNKNOWN NEXT MOVE...");
         }
 
-        success= spelbrade.move(message.getPawnToMove(), message.getMoveTo(),portrait);
+        success = spelbrade.move(message.getPawnToMove(), message.getMoveTo());
         if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
         else infoPanel.setText(string.toString());
     }
 
-
-    /**
-     * Overriding this Activity's onCreateOptionsMenu method. A ContextMenu for
-     * managing To-DoItems (remove)
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-     */
-
-    /**
-     * Overriding the Activity's onOptionsItemSelected method. This is where we
-     * define what actions to take when a option menu item is selected.
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_new_game:
-                //TODO: restart game code here
-                obeyLogic(logik.startNewGame());
-                return true;
-            default:
-                // Other alternatives -> default behavior
-                return super.onOptionsItemSelected(item);
-        }
-    }
-     */
-
-    private class ClickNewGameListener implements View.OnClickListener{
+    private class ClickNewGameListener implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
             openContextMenu(view);
-            //obeyLogic(logik.startNewGame());
         }
     }
+
     // Om n}gon klickar p} spelbr{det, valideras det av spelbr{det,
     // och om detta returnerar noll eller |ver, skickas det in i spellogiken.
     // Kanske skulle man skicka in det i spellogiken direkt, men jag vet inte.

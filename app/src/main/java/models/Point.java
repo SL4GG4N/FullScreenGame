@@ -45,7 +45,7 @@ public class Point implements Serializable{
         return "("+x+";"+y+")";
     }
 
-    public enum Status{
+    public enum Status implements Serializable{
         EMPTY,WHITE,BLACK;
     }
 }

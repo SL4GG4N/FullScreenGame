@@ -1,5 +1,7 @@
 package models;
 
+import controllers.LogicMessage;
+
 /**
  * Created by simonlundstrom on 25/11/16.
  */
@@ -36,6 +38,15 @@ public class NineMenMorrisModel {
         return points;
     }
 
+    public void reset() {
+        for (Point p : points) {
+            p.setStatus(Point.Status.EMPTY);
+        }
+        for (Pawn p : pawns) {
+            p.setPosition(LogicMessage.TO_STASH);
+        }
+
+    }
     public int getPointIndex(Point p) {
         for (int i=0; i<points.length; i++)
             if (points[i]==p)
@@ -82,7 +93,6 @@ public class NineMenMorrisModel {
             pawns[i] = new Pawn();
     }
     public NineMenMorrisModel(Pawn[] pawns,Point[] points){
-        super();
         this.pawns = pawns;
         this.points = points;
     }
