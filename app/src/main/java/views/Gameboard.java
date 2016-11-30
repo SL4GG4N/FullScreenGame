@@ -124,7 +124,6 @@ public class Gameboard extends View {
     public void animateMovement(ImageView obj, float x, float y) {
         if (parentPortrait) y += offset;
         else x += offset;
-        System.out.println("Moving something to "+x+";"+y+")");
         ObjectAnimator xA = ObjectAnimator.ofFloat(obj, "x", x - obj.getWidth() / 2);
         ObjectAnimator yA = ObjectAnimator.ofFloat(obj, "y", y - obj.getWidth() / 2);
         AnimatorSet anime = new AnimatorSet();
@@ -135,31 +134,26 @@ public class Gameboard extends View {
     }
 
     public boolean move(int pawnToMove, int toPosition) {
+        if (pawnToMove<0) return false;
         if (pawnToMove == model.getPawns().length) {
 
             int gameboardWidth = Math.min(getHeight(),getWidth());
 
-//            System.out.println("Gameboard moving all!"+gameboardWidth+")");
             for (int i = 0; i < pawnImages.length; i++) {
                 int oldPosition = model.getPawn(i).getPosition();
-//                System.out.println("Gameboard moving pawn "+i+" to "+oldPosition);
                 if (oldPosition == LogicMessage.TO_STASH) {
-//                    System.out.println("Moving pawn "+i+" to stash!");
                     animateMovement(pawnImages[i], gameboardWidth * 0.05f + (i % 9) * (int) (gameboardWidth * 0.09),
                             (gameboardWidth * 1.05f) + (i / 9) * (int) (gameboardWidth * 0.09));
                 } else if (oldPosition==LogicMessage.TO_DISCARD_PILE) {
-//                    System.out.println("Moving pawn "+i+" to hell!");
                     animateMovement(pawnImages[i], -100, -100);
                 }
                 else {
                     Point p = model.getPoint(model.getPawn(i).getPosition());
-//                    System.out.println("Moving pawn "+i+" to "+p);
                     animateMovement(pawnImages[i], abspos(p.getX()), abspos(p.getY()));
                 }
             }
             return true;
         }
-        if (pawnToMove == -1) return false;
         if (toPosition == LogicMessage.HIGHLIGHT) return true;
         if (toPosition == LogicMessage.TO_DISCARD_PILE) {
             animateMovement(pawnImages[pawnToMove], -100, -100);

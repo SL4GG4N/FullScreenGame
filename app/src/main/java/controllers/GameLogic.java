@@ -1,5 +1,7 @@
 package controllers;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.security.SecureRandom;
 
@@ -52,6 +54,22 @@ public class GameLogic {
         gameCounter = 0;
         isBlacksTurn = false;
         return new LogicMessage(model.getPawns().length, LogicMessage.TO_STASH, LogicMessage.PLACE_PAWN, isBlacksTurn);
+    }
+
+    public LogicMessage confirmState() {
+        int stateToReturn =0;
+        switch (state) {
+            case IDLE : stateToReturn = LogicMessage.START_GAME;
+                break;
+            case PLACING_PAWNS: stateToReturn=LogicMessage.PLACE_PAWN;
+                break;
+            case PAWN_REMOVAL:stateToReturn=LogicMessage.REMOVE_PAWN;
+                break;
+            case CHOOSING_PAWN:stateToReturn=LogicMessage.CHOOSE_PAWN;
+                break;
+            case MOVING_PAWNS:stateToReturn=LogicMessage.MOVE_PAWN;
+        }
+        return new LogicMessage(-1,0,stateToReturn,isBlacksTurn);
     }
 
     //ALL spellogik

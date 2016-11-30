@@ -8,4 +8,6 @@
     <string name="white_player">Vit</string>
     <string name="black_player">Svart</string>
     <string name="win">har vunnit!</string>
+    <string name="start_game">Tryck för att starta.</string>
+    <string name="file_name">kvarnspel</string>
 </resources>

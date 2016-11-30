@@ -13,6 +13,7 @@ public class LogicMessage {
     public static final int CHOOSE_PAWN=5;
     public static final int MOVE_PAWN=7;
     public static final int GAME_OVER=4;
+    public static final int START_GAME=2;
     // ToFrom statements (0--23 {r platser p} br{det)
     public static final int FROM_WHITE_STASH = -2;
     public static final int FROM_BLACK_STASH = -3;

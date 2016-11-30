@@ -1,5 +1,6 @@
 package com.example.eddie.fullscreengame;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,9 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+
+import controllers.FileHandler;
 import controllers.GameLogic;
 import controllers.GameLogicException;
 import controllers.LogicMessage;
@@ -40,6 +44,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            FileHandler.saveToDisk(logik, openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE));
+            System.out.println("Saved stuff to disk");
+        }catch(Exception e) {
+            System.out.println("Could not save to disk.");
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -59,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         spelbrade.setOnTouchListener(new GameboardTouchListener());
         // Initialisera textf{ltet.
         infoPanel = (TextView) findViewById(R.id.infoPane);
+        if (!portrait) infoPanel.getLayoutParams().width=offset;
+
 
         // Alla pj{ser, och s{tt dem i spelbr{det.
         pawnImages = new ImageView[18];
@@ -92,8 +109,13 @@ public class MainActivity extends AppCompatActivity {
                     savedInstanceState.getBoolean("blacksturn"));
 
         } else {
-            logik = new GameLogic();
-            System.out.println("creating new Logic from scratch.");
+            try {
+                logik = FileHandler.loadFromDisk(openFileInput(getString(R.string.file_name)));
+                System.out.println("Loaded stuff from disk.");
+            }catch(Exception ex) {
+                logik = new GameLogic();
+                System.out.println("No file found. Creating new Logic from scratch.");
+            }
         }
         // S{tt logiken och flytta pj{serna dit de ska.
         spelbrade.setModel(logik.getModel());
@@ -103,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         spelbrade.move(pawnImages.length, 0);
+        obeyLogic(logik.confirmState());
     }
 
     @Override
@@ -129,6 +152,10 @@ public class MainActivity extends AppCompatActivity {
         else string.append(getString(R.string.white_player));
         string.append(", ");
         switch (message.getNextMove()) {
+            case LogicMessage.START_GAME :{
+                string = new StringBuilder(getString(R.string.start_game));
+            }
+            break;
             case LogicMessage.GAME_OVER: {
                 string.append(getString(R.string.win));
             }
@@ -154,8 +181,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         success = spelbrade.move(message.getPawnToMove(), message.getMoveTo());
-        if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
-        else infoPanel.setText(string.toString());
+//        if (!success) infoPanel.setText("GAMEBOARD COULD NOT PERFORM TASK...");
+        infoPanel.setText(string.toString());
     }
 
     private class ClickNewGameListener implements View.OnClickListener {
